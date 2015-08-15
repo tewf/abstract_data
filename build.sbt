@@ -28,11 +28,16 @@ resolvers ++= Seq(
   "Sonatype Releases" at "https://oss.sonatype.org/content/repositories/releases/"
 )
 
+// for simulacrum
+addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full)
+
 libraryDependencies ++= Seq(
   // math & ml
   "org.spire-math" %% "spire" % "0.9.1", 
   "org.scalanlp" %% "breeze" % "0.11.2",
   "org.scalanlp" %% "nak" % "1.3",
+  // functional
+  "com.github.mpilquist" %% "simulacrum" % "0.4.0",
   // Testing
   "org.scalatest" %% "scalatest" % "2.2.4" % Test
 )
