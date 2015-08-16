@@ -4,19 +4,19 @@ import scala.language.implicitConversions
 import scala.reflect.ClassTag
 
 /** Wraps a Traversable as a Data. */
-case class TravData[A](ls: Traversable[A]) extends Data[A] {
+case class TravData[A](ls: Traversable[A]) extends Data[A]  {
 
   override def map[B: ClassTag](f: A => B): Data[B] =
     TravData(ls.map(f))
 
-  override def mapParition[B: ClassTag](f: Iterator[A] => Iterator[B]): Data[B] =
-    TravData(f(ls.toIterator).toTraversable)
+  override def mapParition[B: ClassTag](f: Iterable[A] => Iterable[B]): Data[B] =
+    TravData(f(ls.toIterable).toTraversable)
 
   override def foreach(f: A => Any): Unit =
     ls.foreach(f)
 
-  override def foreachPartition(f: Iterator[A] => Any): Unit = {
-    val _ = f(ls.toIterator)
+  override def foreachPartition(f: Iterable[A] => Any): Unit = {
+    val _ = f(ls.toIterable)
   }
 
   override def filter(f: A => Boolean): Data[A] =

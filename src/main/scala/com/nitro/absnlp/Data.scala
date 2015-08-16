@@ -1,6 +1,9 @@
 package com.nitro.absnlp
 
+
+
 import scala.reflect.ClassTag
+import scala.util.Random
 
 /**
  * Trait that abstractly represents operations that can be performed on a dataset.
@@ -12,12 +15,12 @@ trait Data[A] {
   /** Transform a dataset by applying f to each element. */
   def map[B: ClassTag](f: A => B): Data[B]
 
-  def mapParition[B: ClassTag](f: Iterator[A] => Iterator[B]): Data[B]
+  def mapParition[B: ClassTag](f: Iterable[A] => Iterable[B]): Data[B]
 
   /** Apply a side-effecting function to each element. */
   def foreach(f: A => Any): Unit
 
-  def foreachPartition(f: Iterator[A] => Any): Unit
+  def foreachPartition(f: Iterable[A] => Any): Unit
 
   def filter(f: A => Boolean): Data[A]
 
@@ -40,6 +43,9 @@ trait Data[A] {
   //    override def zip[A1 >: A, B
   def flatMap[B: ClassTag](f: A => TraversableOnce[B]): Data[B]
 
+  def flatten[B: ClassTag](implicit asEnumerator: A => Traversable[B]): Data[B] =
+    flatMap(x => asEnumerator(x))
+
   def groupBy[B: ClassTag](f: A => B): Data[(B, Iterable[A])]
 
   def as: Data[A] = this
@@ -60,5 +66,21 @@ trait Data[A] {
   def zip[A1 >: A: ClassTag, B: ClassTag](that: Data[B]): Data[(A1, B)]
 
   def zipWithIndex: Data[(A, Long)]
+
+}
+
+object Data {
+
+  type RandomGenerator = () => Random
+
+  def shuffle[A: ClassTag](data: Data[A])(implicit randgen: RandomGenerator): Data[A] =
+    data
+      .mapParition[A] { partition =>
+        val r = randgen()
+        r.setSeed(System.currentTimeMillis * 13l)
+        partition
+          .toSeq
+          .sortBy(_ => r.nextInt())
+      }
 
 }

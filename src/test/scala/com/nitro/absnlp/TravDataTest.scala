@@ -2,19 +2,22 @@ package com.nitro.absnlp
 
 import java.util.Random
 
-import com.nitro.absnlp.ml.DiscreteDistributionTest
+import com.nitro.absnlp.util.MapOps
+
 import org.scalatest.FunSuite
 
-class DatTest extends FunSuite {
+import scala.language.postfixOps
 
-  import DatTest._
+class TravDataTest extends FunSuite {
+
+  import TravDataTest._
 
   private[this] val r = new Random()
-  private[this] implicit val randgen: Dat.RandomGenerator =
+  private[this] implicit val randgen: Data.RandomGenerator =
     () => r
 
   test("map") {
-    val d: Dat[Int] = dataDat.map(_.length)
+    val d: Data[Int] = dataDat.map(_.length)
     val t: Seq[Int] = data.map(_.length)
     t.zip(d.toSeq)
       .foreach {
@@ -22,8 +25,8 @@ class DatTest extends FunSuite {
       }
   }
 
-  test("mapPartitions") {
-    val d: Dat[Int] = dataDat.mapPartitions(x => x.map(_.length))
+  test("mapPartition") {
+    val d: Data[Int] = dataDat.mapParition(x => x.map(_.length))
     val t: Seq[Int] = data.map(_.length)
     t.zip(d.toSeq)
       .foreach {
@@ -60,7 +63,7 @@ class DatTest extends FunSuite {
   }
 
   test("sortBy") {
-    val sortedDat: Dat[String] = Dat.shuffle(dataDat).sortBy(identity)
+    val sortedDat: Data[String] = Data.shuffle(dataDat).sortBy(identity)
     val sortedNormal: Seq[String] = data.sortBy(_ => r.nextLong()).sortBy(identity)
     sortedDat.toSeq.zip(sortedNormal)
       .foreach {
@@ -80,7 +83,7 @@ class DatTest extends FunSuite {
   }
 
   test("flatMap") {
-    val fDat: Dat[String] =
+    val fDat: Data[String] =
       dataDat
         .flatMap(s =>
           if (s.length % 2 == 0)
@@ -102,7 +105,7 @@ class DatTest extends FunSuite {
   }
 
   test("flatten") {
-    val fDat: Dat[String] =
+    val fDat: Data[String] =
       dataDat
         .map(s =>
           if (s.length % 2 == 0)
@@ -127,7 +130,7 @@ class DatTest extends FunSuite {
   }
 
   test("groupBy") {
-    val dGb: Dat[(Int, Iterable[String])] = dataDat.groupBy(_.length)
+    val dGb: Data[(Int, Iterable[String])] = dataDat.groupBy(_.length)
     val nGb: Map[Int, Iterable[String]] = data.groupBy(_.length)
 
     dGb
@@ -154,12 +157,20 @@ class DatTest extends FunSuite {
   }
 }
 
-object DatTest {
+object TravDataTest {
 
-  val data: Seq[String] = DiscreteDistributionTest.itemCounts.keys.toIndexedSeq
+  val itemCounts =
+    """Roxanne You don't have to put on the red light Those days are over You don't have to sell your body to the night Roxanne You don't have to wear that dress tonight Walk the streets for money You don't care if it's wrong or if it's right"""
+      .split(" ")
+      .map(_.toLowerCase)
+      .foldLeft(Map.empty[String, Int]) {
+      case (m, word) => MapOps.increment(m, word, 1)
+    }
 
-  val dataDat: Dat[String] = {
-    import TravDat._
+  val data: Seq[String] = itemCounts.keys.toIndexedSeq
+
+  val dataDat: Data[String] = {
+    import TravData.Implicits._
     data
   }
 }
