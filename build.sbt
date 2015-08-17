@@ -31,13 +31,16 @@ resolvers ++= Seq(
 // for simulacrum
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full)
 
+// if your project uses multiple Scala versions, use this for cross building
+addCompilerPlugin("org.spire-math" % "kind-projector" % "0.6.3" cross CrossVersion.binary)
+
 libraryDependencies ++= Seq(
   // math & ml
   "org.spire-math" %% "spire" % "0.9.1", 
   "org.scalanlp" %% "breeze" % "0.11.2",
-  "org.scalanlp" %% "nak" % "1.3",
-  // functional
+  // algebra, typeclasses, functional 
   "com.github.mpilquist" %% "simulacrum" % "0.4.0",
+  "org.spire-math" %% "algebra" % "0.3.1",
   // Testing
   "org.scalatest" %% "scalatest" % "2.2.4" % Test
 )
