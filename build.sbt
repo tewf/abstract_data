@@ -41,6 +41,9 @@ libraryDependencies ++= Seq(
   // algebra, typeclasses, functional 
   "com.github.mpilquist" %% "simulacrum" % "0.4.0",
   "org.spire-math" %% "algebra" % "0.3.1",
+  // TODO : REMOVE and put into separate repo!
+  "org.apache.flink" % "flink-scala"   % "0.9.0",
+//  "org.apache.flink" % "flink-clients" % "0.9.0",
   // Testing
   "org.scalatest" %% "scalatest" % "2.2.4" % Test
 )
@@ -63,7 +66,8 @@ testOptions += Tests.Argument(TestFrameworks.JUnit, "-v")
 
 testOptions in Test += Tests.Argument("-oF")
 
-fork in Test := false
+// TODO change back to false once we're done w/ Flink
+fork in Test := true
 
 parallelExecution in Test := true
 
