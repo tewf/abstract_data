@@ -28,7 +28,7 @@ trait Data[A] {
   def aggregate[B: ClassTag](zero: B)(seqOp: (B, A) => B, combOp: (B, B) => B): B
 
   /** Sort the dataset using a function f that evaluates each element to an orderable type */
-  def sortBy[B: ClassTag](f: (A) ⇒ B)(implicit ord: math.Ordering[B]): Data[A]
+  def sortBy[B: ClassTag](f: (A) => B)(implicit ord: math.Ordering[B]): Data[A]
 
   /** Construct a traversable for the first k elements of a dataset. Will load into main mem. */
   def take(k: Int): Traversable[A]

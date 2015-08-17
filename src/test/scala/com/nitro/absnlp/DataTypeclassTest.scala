@@ -203,6 +203,13 @@ class DataTypeclassTest extends FunSuite {
     foo(data)
   }
 
+  test("zip") {
+      def foo[D[_]: DataTypeclass](data: D[Int]): D[(Int, Int)] =
+        data.zip(data)
+
+    assert(foo(data) == Seq((1, 1), (2, 2), (3, 3)))
+  }
+
   test("implicits to Traversable") {
     import t.Implicits._
     val ignore0: Traversable[Int] = seq2data(Seq(1))

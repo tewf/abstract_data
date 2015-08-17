@@ -69,7 +69,8 @@ case object TravDataTypeclass extends DataTypeclass[Traversable] {
   override def sum[N: ClassTag: Numeric](d: Traversable[N]): N =
     d.sum
 
-  //  override def zip[A, B: ClassTag, D2[_]](d:Traversable[A])(that: D2[B])(implicit d2IsData: DataTypeclass[D2]): D2[(A, B)] = ???
+  override def zip[A, B: ClassTag](d: Traversable[A])(that: Traversable[B]): Traversable[(A, B)] =
+    d.toSeq.zip(that.toSeq)
 
   override def zipWithIndex[A](d: Traversable[A]): Traversable[(A, Long)] =
     d.toSeq.zipWithIndex.map { case (a, i) => (a, i.toLong) }.toTraversable

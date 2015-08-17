@@ -34,7 +34,7 @@ import simulacrum._
   def aggregate[A, B: ClassTag](d: D[A])(zero: B)(seqOp: (B, A) => B, combOp: (B, B) => B): B
 
   /** Sort the dataset using a function f that evaluates each element to an orderable type */
-  def sortBy[A, B: ClassTag](d: D[A])(f: (A) ⇒ B)(implicit ord: math.Ordering[B]): D[A]
+  def sortBy[A, B: ClassTag](d: D[A])(f: (A) => B)(implicit ord: math.Ordering[B]): D[A]
 
   /** Construct a traversable for the first k elements of a dataset. Will load into main mem. */
   def take[A](d: D[A])(k: Int): Traversable[A]
@@ -63,7 +63,9 @@ import simulacrum._
   def sum[N: ClassTag: Numeric](d: D[N]): N
 
   // too hard...
-  //  def zip[A, B: ClassTag, D2[_]](d:D[A])(that: D2[B])(implicit d2IsData: DataTypeclass[D2]): D2[(A, B)]
+  def zipDifficult[A, B: ClassTag, D2[_]](d: D[A])(that: D2[B])(implicit d2IsData: DataTypeclass[D2]): D2[(A, B)] = ???
+
+  def zip[A, B: ClassTag](d: D[A])(that: D[B]): D[(A, B)]
 
   def zipWithIndex[A](d: D[A]): D[(A, Long)]
 
