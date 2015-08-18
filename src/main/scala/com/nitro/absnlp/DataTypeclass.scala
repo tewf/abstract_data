@@ -13,7 +13,7 @@ import simulacrum._
  */
 @typeclass trait DataTypeclass[D[_]] {
 
-  def empty[A]: D[A]
+  //  def empty[A]: D[A]
 
   /** Transform a dataset by applying f to each element. */
   def map[A, B: ClassTag](d: D[A])(f: A => B): D[B]

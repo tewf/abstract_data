@@ -1,12 +1,12 @@
 package com.nitro.absnlp
 
-import scala.language.higherKinds
+import scala.language.{ implicitConversions, higherKinds }
 import scala.reflect.ClassTag
 
 case object TravDataTypeclass extends DataTypeclass[Traversable] {
 
-  override def empty[A]: Traversable[A] =
-    Traversable.empty[A]
+  //  override def empty[A]: Traversable[A] =
+  //    Traversable.empty[A]
 
   /** Transform a dataset by applying f to each element. */
   override def map[A, B: ClassTag](data: Traversable[A])(f: (A) => B): Traversable[B] =
