@@ -1,30 +1,14 @@
-abstract_ml
+abstract_data
 ============
 
-Lightweight types, traits, and other abstractions for interacting with, learning from, and infering the meaning of data. This library casts machine learning concepts and algorithms using the core tennents of functinoal programming: strong, expressive types guding function compositions to create rich, correct programs.
-
-Implementations of machine learnings algorithms are as generic as possible. At a high level, all actions, data transformations, model learning or prediction, etc. are guided by descriptive types. Nearly all actions are represented as functions: type aliases are judiciously used in order to categorize and name the variety of machine learning programs.
+A unifying typeclass describing collections and higher-order data transformation and manipulation actions common to a wide variety of data processing tasks. Inspired by the Scala collections API.
 
 Use Cases
 =========
 
-NOTE: Assume this import below: com.nitro.absml._
-
-* You want to provide a clean, simple, intuitive interface for a learning algorithm you've developed. You want to use the types in the `Learning` module.
-
-`Learning` is a trait that supplies many type definitions that describe the behavior of machine learning (ML) algorithms. The generic type parameters in `Learning[_, _]` specify the `Item` and `Label` types, respectively. The `Classifier` function type yields a `Label` given an `Item`. The `Estimator` type yields a `Distribution` over `Label`s given an `Item`.
+Write an algorithm that works on a generic collection (fif.Data) and be able to instantly re-use your code to scale from local Scala collections to massively distributed Spark RDDs or Flink DataSet instances.
 
 
-* Looking to understand the components of the `Learning` module more? Dive into `Distribution` and `Argmax`.
-
-`Distribution` is a trait for describing a probability distribution over a set of items. It's generic, so the distribution can range over any specific type. There are, however, only two concrete instantiations: a continuous or discrete distribution. Continuous distributions are parameterized by a probability density function only. Discrete distributions have an item set with corresponding probabilities.
-
-`Argmax` is an object whose `apply` method will find the maximal argument in a given list. `Argmax.apply` accepts a generic sequence of items, with the constraint that there must be implicit evidence for each argument's value. 
-
-The `Val` typeclass provides this evidence. There are pre-defined versions that work with `(Double, T)` and `(T, Double)` for a generic type `T`.
-
-
-Contributing
 ============
 We <3 contributions! We want this code to be useful and used! We use pull requests to review and discuss changes, fixes, and improvements.
 
