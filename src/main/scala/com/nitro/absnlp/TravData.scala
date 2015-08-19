@@ -1,102 +1,85 @@
 package com.nitro.absnlp
 
-import scala.language.implicitConversions
+import scala.language.{ implicitConversions, higherKinds }
 import scala.reflect.ClassTag
 
-/** Wraps a Traversable as a Data. */
-case class TravData[A](ls: Traversable[A]) extends Data[A] {
+case object TravData extends Data[Traversable] {
 
-  override def map[B: ClassTag](f: A => B): Data[B] =
-    TravData(ls.map(f))
+  /** Transform a dataset by applying f to each element. */
+  override def map[A, B: ClassTag](data: Traversable[A])(f: (A) => B): Traversable[B] =
+    data.map(f)
 
-  override def mapParition[B: ClassTag](f: Iterator[A] => Iterator[B]): Data[B] =
-    TravData(f(ls.toIterator).toTraversable)
+  override def mapParition[A, B: ClassTag](d: Traversable[A])(f: Iterable[A] => Iterable[B]): Traversable[B] =
+    f(d.toIterable).toTraversable
 
-  override def foreach(f: A => Any): Unit =
-    ls.foreach(f)
+  /** Apply a side-effecting function to each element. */
+  override def foreach[A](d: Traversable[A])(f: A => Any): Unit =
+    d.foreach(f)
 
-  override def foreachPartition(f: Iterator[A] => Any): Unit = {
-    val _ = f(ls.toIterator)
+  override def foreachPartition[A](d: Traversable[A])(f: Iterable[A] => Any): Unit = {
+    val _ = f(d.toIterable)
   }
 
-  override def filter(f: A => Boolean): Data[A] =
-    TravData(ls.filter(f))
+  override def filter[A](d: Traversable[A])(f: A => Boolean): Traversable[A] =
+    d.filter(f)
 
-  override def aggregate[B: ClassTag](zero: B)(seqOp: (B, A) => B, combOp: (B, B) => B): B =
-    ls.aggregate(zero)(seqOp, combOp)
+  override def aggregate[A, B: ClassTag](d: Traversable[A])(zero: B)(seqOp: (B, A) => B, combOp: (B, B) => B): B =
+    d.aggregate(zero)(seqOp, combOp)
 
-  override def sortBy[B: ClassTag](f: (A) ⇒ B)(implicit ord: math.Ordering[B]): Data[A] =
-    TravData(ls.toSeq.sortBy(f))
+  /** Sort the dataset using a function f that evaluates each element to an orderable type */
+  override def sortBy[A, B: ClassTag](d: Traversable[A])(f: (A) ⇒ B)(implicit ord: math.Ordering[B]): Traversable[A] =
+    d.toSeq.sortBy(f)
 
-  override def take(k: Int): Traversable[A] =
-    ls.take(k)
+  /** Construct a traversable for the first k elements of a dataset. Will load into main mem. */
+  override def take[A](d: Traversable[A])(k: Int): Traversable[A] =
+    d.take(k)
 
-  override def headOption: Option[A] =
-    ls.headOption
+  override def headOption[A](d: Traversable[A]): Option[A] =
+    d.headOption
 
-  override def toSeq: Seq[A] =
-    ls.toSeq
+  /** Load all elements of the dataset into an array in main memory. */
+  override def toSeq[A](d: Traversable[A]): Seq[A] =
+    d.toSeq
 
-  override def flatMap[B: ClassTag](f: A => TraversableOnce[B]): Data[B] =
-    TravData(ls.flatMap(f))
+  override def flatMap[A, B: ClassTag](d: Traversable[A])(f: A => TraversableOnce[B]): Traversable[B] =
+    d.flatMap(f)
 
-  override def groupBy[B: ClassTag](f: A => B): Data[(B, Iterable[A])] =
-    TravData(
-      ls
-        .groupBy(f)
-        .toTraversable
-        .map {
-          case (b, iter) => (b, iter.toIterable)
-        }
-    )
+  override def flatten[A, B: ClassTag](d: Traversable[A])(implicit asTraversable: A => TraversableOnce[B]): Traversable[B] =
+    d.flatten
 
-  override def reduce[A1 >: A: ClassTag](r: (A1, A1) => A1): A1 =
-    ls.reduce(r)
+  override def groupBy[A, B: ClassTag](d: Traversable[A])(f: A => B): Traversable[(B, Iterator[A])] =
+    d.groupBy(f).toTraversable.map { case (a, b) => (a, b.toIterator) }
 
-  override def reduceLeft(r: (A, A) => A): A =
-    ls.reduce(r)
+  /** This has type A as opposed to B >: A due to the RDD limitations */
+  override def reduce[A](d: Traversable[A])(op: (A, A) => A): A =
+    d.reduce(op)
 
-  override def toMap[T, U](implicit ev: A <:< (T, U)): Map[T, U] =
-    ls.toMap
+  override def toMap[A, T, U](d: Traversable[A])(implicit ev: A <:< (T, U)): Map[T, U] =
+    d.toMap
 
-  override def size: Long =
-    ls.size
+  override def size[A](d: Traversable[A]): Long =
+    d.size
 
-  override def isEmpty: Boolean =
-    ls.isEmpty
+  override def isEmpty[A](d: Traversable[A]): Boolean =
+    d.isEmpty
 
-  override def sum[N >: A](implicit num: Numeric[N]): N =
-    ls.sum(num)
+  override def sum[N: ClassTag: Numeric](d: Traversable[N]): N =
+    d.sum
 
-  override def zip[A1 >: A: ClassTag, B: ClassTag](that: Data[B]): Data[(A1, B)] =
-    that match {
+  override def zip[A, B: ClassTag](d: Traversable[A])(that: Traversable[B]): Traversable[(A, B)] =
+    d.toSeq.zip(that.toSeq)
 
-      case TravData(thatLs) =>
-        TravData(ls.toIterable.zip(thatLs.toIterable).toTraversable)
-
-      case other =>
-        other
-          .zip(TravData(ls.map(_.asInstanceOf[A1])))(implicitly[ClassTag[B]], implicitly[ClassTag[A1]])
-          .map { case (b, a1) => (a1, b) }
-    }
-
-  override def zipWithIndex: Data[(A, Long)] =
-    TravData(ls.toIndexedSeq.zipWithIndex.map(a => (a._1, a._2.toLong)))
-
-}
-
-object TravData {
+  override def zipWithIndex[A](d: Traversable[A]): Traversable[(A, Long)] =
+    d.toSeq.zipWithIndex.map { case (a, i) => (a, i.toLong) }.toTraversable
 
   object Implicits {
 
-    implicit def traversable2data[A](t: Traversable[A]): Data[A] =
-      TravData(t)
-
-    implicit def seq2data[A](s: Seq[A]): Data[A] =
+    implicit def seq2data[A](s: Seq[A]): Traversable[A] =
       s.toTraversable
 
-    implicit def array2Data[A](a: Array[A]): Data[A] =
-      a.toTraversable
+    implicit def array2Data[A](a: Array[A]): Traversable[A] =
+      Predef.genericArrayOps(a).toTraversable
+
   }
 
 }

@@ -5,18 +5,13 @@ import org.scalatest.FunSuite
 import scala.language.higherKinds
 import scala.reflect.ClassTag
 
-/**
- * Trait that abstractly represents operations that can be performed on a dataset.
- * The implementation of Data is suitable for both large-scale, distributed data
- * or in-memory structures.
- */
-class DataTypeclassTest extends FunSuite {
+class TravDataTest extends FunSuite {
 
   // for infix syntax
   import DataTypeclass.ops._
 
   // Datatypeclass evidence for all kinds of Traversables
-  implicit val t = TravDataTypeclass
+  implicit val t = TravData
 
   import t.Implicits._
 
@@ -24,10 +19,10 @@ class DataTypeclassTest extends FunSuite {
 
   test("test map") {
 
-      def addElementwise10[D[_]: DataTypeclass](data: D[Int]): D[Int] =
+      def addElementwise10[D[_]: Data](data: D[Int]): D[Int] =
         data.map(_ + 10)
 
-      def addElementwise10_tc[D[_]](data: D[Int])(implicit ev: DataTypeclass[D]): D[Int] =
+      def addElementwise10_tc[D[_]](data: D[Int])(implicit ev: Data[D]): D[Int] =
         ev.map(data)(_ + 10)
 
     {
@@ -47,7 +42,7 @@ class DataTypeclassTest extends FunSuite {
 
   test("mapPartition") {
 
-      def mapParition10[D[_]: DataTypeclass](data: D[Int]): D[Int] =
+      def mapParition10[D[_]: Data](data: D[Int]): D[Int] =
         data.mapParition { elements => elements.map(_ + 10) }
 
     val changed = mapParition10(data)
@@ -57,7 +52,7 @@ class DataTypeclassTest extends FunSuite {
 
   test("foreach") {
 
-      def testForeach[D[_]: DataTypeclass](data: D[Int]): Unit =
+      def testForeach[D[_]: Data](data: D[Int]): Unit =
         data.foreach(x => assert(x >= 1 && x <= 3))
 
     testForeach(data)
@@ -65,7 +60,7 @@ class DataTypeclassTest extends FunSuite {
 
   test("foreachPartition") {
 
-      def testForeachPart[D[_]: DataTypeclass](data: D[Int]): Unit =
+      def testForeachPart[D[_]: Data](data: D[Int]): Unit =
         data.foreachPartition(_.foreach(x => assert(x >= 1 && x <= 3)))
 
     testForeachPart(data)
@@ -73,7 +68,7 @@ class DataTypeclassTest extends FunSuite {
 
   test("aggregate") {
 
-      def aggregateTest[D[_]: DataTypeclass](data: D[Int]): Int =
+      def aggregateTest[D[_]: Data](data: D[Int]): Int =
         data.aggregate(0)(_ + _, _ + _)
 
     assert(aggregateTest(data) == 6)
@@ -81,7 +76,7 @@ class DataTypeclassTest extends FunSuite {
 
   test("sortBy") {
 
-      def reverseSort[D[_]: DataTypeclass](data: D[Int]): D[Int] =
+      def reverseSort[D[_]: Data](data: D[Int]): D[Int] =
         data.sortBy(x => -x)
 
     assert(reverseSort(data) == Seq(3, 2, 1))
@@ -89,7 +84,7 @@ class DataTypeclassTest extends FunSuite {
 
   test("take") {
 
-      def testTake[D[_]: DataTypeclass](data: D[Int]): Boolean =
+      def testTake[D[_]: Data](data: D[Int]): Boolean =
         data.take(1) == Seq(1) && data.take(2) == Seq(1, 2) && data.take(3) == Seq(1, 2, 3)
 
     assert(testTake(data))
@@ -97,7 +92,7 @@ class DataTypeclassTest extends FunSuite {
 
   test("toSeq") {
 
-      def testToSeqIs123[D[_]: DataTypeclass](data: D[Int]): Boolean =
+      def testToSeqIs123[D[_]: Data](data: D[Int]): Boolean =
         data.toSeq == Seq(1, 2, 3)
 
     assert(testToSeqIs123(data))
@@ -105,7 +100,7 @@ class DataTypeclassTest extends FunSuite {
 
   test("flatMap") {
 
-      def testFlat[D[_]: DataTypeclass](data: D[Int]): D[Int] =
+      def testFlat[D[_]: Data](data: D[Int]): D[Int] =
         data.flatMap { number =>
           (0 until number).map(_ => number)
         }
@@ -116,7 +111,7 @@ class DataTypeclassTest extends FunSuite {
 
   test("flatten") {
 
-      def flattenTest[D[_]: DataTypeclass](data: D[Seq[Int]]): D[Int] =
+      def flattenTest[D[_]: Data](data: D[Seq[Int]]): D[Int] =
         data.flatten
 
     val expanded = data.map(x => Seq(x))
@@ -126,7 +121,7 @@ class DataTypeclassTest extends FunSuite {
 
   test("groupBy") {
 
-      def groupIt[D[_]: DataTypeclass](data: D[Int]): D[(Boolean, Iterator[Int])] =
+      def groupIt[D[_]: Data](data: D[Int]): D[(Boolean, Iterator[Int])] =
         data.groupBy { _ % 2 == 0 }
 
     val evenGroup = groupIt(data).toMap
@@ -142,7 +137,7 @@ class DataTypeclassTest extends FunSuite {
 
   test("size") {
 
-      def sizeIs3[D[_]: DataTypeclass](data: D[Int]): Boolean =
+      def sizeIs3[D[_]: Data](data: D[Int]): Boolean =
         data.size == 3
 
     assert(sizeIs3(data))
@@ -150,7 +145,7 @@ class DataTypeclassTest extends FunSuite {
 
   test("reduce") {
 
-      def foo[D[_]: DataTypeclass](data: D[Int]): Int =
+      def foo[D[_]: Data](data: D[Int]): Int =
         data.reduce {
           case (a, b) => 1 + a + b
         }
@@ -160,51 +155,53 @@ class DataTypeclassTest extends FunSuite {
   }
 
   test("sum") {
-      def s[D[_]: DataTypeclass](data: D[Int]): Int =
+      def s[D[_]: Data](data: D[Int]): Int =
         data.sum
 
     assert(s(data) == 6)
   }
 
   test("filter") {
-      def f[D[_]: DataTypeclass](data: D[Int]): D[Int] =
+      def f[D[_]: Data](data: D[Int]): D[Int] =
         data.filter(_ % 2 == 0)
 
     assert(f(data) == Seq(2))
   }
 
   test("headOption") {
-      def h[D[_]: DataTypeclass](data: D[Int]): Option[Int] =
+      def h[D[_]: Data](data: D[Int]): Option[Int] =
         data.headOption
 
     assert(h(data) == Some(1))
-    assert(h(t.empty[Int]) == None)
+    val empty = Traversable.empty[Int]
+    assert(h(empty) == None)
   }
 
   test("isEmpty") {
-      def e[D[_]: DataTypeclass](data: D[_]): Boolean =
+      def e[D[_]: Data](data: D[_]): Boolean =
         data.isEmpty
 
     assert(!e(data))
-    assert(e(t.empty))
+    val empty = Traversable.empty[Int]
+    assert(e(empty))
   }
 
   test("toMap") {
-      def toM[D[_]: DataTypeclass](data: D[Int]): Map[Int, Int] =
+      def toM[D[_]: Data](data: D[Int]): Map[Int, Int] =
         data.map(x => (x, x)).toMap
 
     assert(toM(data) == Map(1 -> 1, 2 -> 2, 3 -> 3))
   }
 
   test("zipWithIndex") {
-      def foo[D[_]: DataTypeclass](data: D[Int]): Unit =
+      def foo[D[_]: Data](data: D[Int]): Unit =
         assert(data.zipWithIndex == Seq((1, 0), (2, 1), (3, 2)))
 
     foo(data)
   }
 
   test("zip") {
-      def foo[D[_]: DataTypeclass](data: D[Int]): D[(Int, Int)] =
+      def foo[D[_]: Data](data: D[Int]): D[(Int, Int)] =
         data.zip(data)
 
     assert(foo(data) == Seq((1, 1), (2, 2), (3, 3)))

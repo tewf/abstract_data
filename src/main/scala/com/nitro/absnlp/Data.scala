@@ -1,64 +1,70 @@
 package com.nitro.absnlp
 
+import scala.collection.GenTraversableOnce
+import scala.language.higherKinds
 import scala.reflect.ClassTag
+
+import simulacrum._
 
 /**
  * Trait that abstractly represents operations that can be performed on a dataset.
  * The implementation of Data is suitable for both large-scale, distributed data
  * or in-memory structures.
  */
-trait Data[A] {
+@typeclass trait Data[D[_]] {
 
   /** Transform a dataset by applying f to each element. */
-  def map[B: ClassTag](f: A => B): Data[B]
+  def map[A, B: ClassTag](d: D[A])(f: A => B): D[B]
 
-  def mapParition[B: ClassTag](f: Iterator[A] => Iterator[B]): Data[B]
+  def mapParition[A, B: ClassTag](d: D[A])(f: Iterable[A] => Iterable[B]): D[B]
 
   /** Apply a side-effecting function to each element. */
-  def foreach(f: A => Any): Unit
+  def foreach[A](d: D[A])(f: A => Any): Unit
 
-  def foreachPartition(f: Iterator[A] => Any): Unit
+  def foreachPartition[A](d: D[A])(f: Iterable[A] => Any): Unit
 
-  def filter(f: A => Boolean): Data[A]
+  def filter[A](d: D[A])(f: A => Boolean): D[A]
 
   /**
    * Starting from a defined zero value, perform an operation seqOp on each element
    * of a dataset. Combine results of seqOp using combOp for a final value.
    */
-  def aggregate[B: ClassTag](zero: B)(seqOp: (B, A) => B, combOp: (B, B) => B): B
+  def aggregate[A, B: ClassTag](d: D[A])(zero: B)(seqOp: (B, A) => B, combOp: (B, B) => B): B
 
   /** Sort the dataset using a function f that evaluates each element to an orderable type */
-  def sortBy[B: ClassTag](f: (A) => B)(implicit ord: math.Ordering[B]): Data[A]
+  def sortBy[A, B: ClassTag](d: D[A])(f: (A) => B)(implicit ord: math.Ordering[B]): D[A]
 
   /** Construct a traversable for the first k elements of a dataset. Will load into main mem. */
-  def take(k: Int): Traversable[A]
+  def take[A](d: D[A])(k: Int): Traversable[A]
 
-  def headOption: Option[A]
+  def headOption[A](d: D[A]): Option[A]
 
   /** Load all elements of the dataset into an array in main memory. */
-  def toSeq: Seq[A]
-  //    override def zip[A1 >: A, B
-  def flatMap[B: ClassTag](f: A => TraversableOnce[B]): Data[B]
+  def toSeq[A](d: D[A]): Seq[A]
 
-  def groupBy[B: ClassTag](f: A => B): Data[(B, Iterable[A])]
+  def flatMap[A, B: ClassTag](d: D[A])(f: A => TraversableOnce[B]): D[B]
 
-  def as: Data[A] = this
+  def flatten[A, B: ClassTag](d: D[A])(implicit asTraversable: A => TraversableOnce[B]): D[B]
 
-  def reduce[A1 >: A: ClassTag](r: (A1, A1) => A1): A1
+  def groupBy[A, B: ClassTag](d: D[A])(f: A => B): D[(B, Iterator[A])]
 
-  /** This has type A as opposed to B >: A due to the RDD limitations */
-  def reduceLeft(op: (A, A) => A): A
+  //  def as[A](d:D[A]): D[A] = d
 
-  def toMap[T, U](implicit ev: A <:< (T, U)): Map[T, U]
+  def reduce[A](d: D[A])(op: (A, A) => A): A
 
-  def size: Long
+  def toMap[A, T, U](d: D[A])(implicit ev: A <:< (T, U)): Map[T, U]
 
-  def isEmpty: Boolean
+  def size[A](d: D[A]): Long
 
-  def sum[N >: A](implicit num: Numeric[N]): N
+  def isEmpty[A](d: D[A]): Boolean
 
-  def zip[A1 >: A: ClassTag, B: ClassTag](that: Data[B]): Data[(A1, B)]
+  def sum[N: ClassTag: Numeric](d: D[N]): N
 
-  def zipWithIndex: Data[(A, Long)]
+  // too hard...
+  def zipDifficult[A, B: ClassTag, D2[_]](d: D[A])(that: D2[B])(implicit d2IsData: Data[D2]): D2[(A, B)] = ???
+
+  def zip[A, B: ClassTag](d: D[A])(that: D[B]): D[(A, B)]
+
+  def zipWithIndex[A](d: D[A]): D[(A, Long)]
 
 }
