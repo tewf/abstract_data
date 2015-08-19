@@ -12,15 +12,21 @@ import PublishHelpers._
 
 // scala & java
 
+//                         :::   NOTE   :::
 // we want to update to JVM 8 ASAP !
 // since we know that we want to be able to use this stuff w/ Spark,
 // we unfortunately have to limit ourselves to jvm 7.
-// once this gets resolved, we'll update: https://issues.apache.org/jira/browse/SPARK-6152
-lazy val jvmVer = JvmRuntime.Jvm7
+// once this gets resolved, we'll update: 
+// [JIRA Issue]     https://issues.apache.org/jira/browse/SPARK-6152
 
-CompileScalaJava.librarySettings()
+lazy val devConfig = {
+  import CompileScalaJava._
+  Config.spark
+}
 
-javaOptions := JvmRuntime.settings()
+CompileScalaJava.librarySettings(devConfig)
+
+javaOptions := JvmRuntime.settings(devConfig.jvmVer)
 
 // dependencies and their resolvers
 
@@ -28,11 +34,16 @@ resolvers ++= Seq(
   "Sonatype Releases" at "https://oss.sonatype.org/content/repositories/releases/"
 )
 
+// for simulacrum
+addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full)
+
+// if your project uses multiple Scala versions, use this for cross building
+addCompilerPlugin("org.spire-math" % "kind-projector" % "0.6.3" cross CrossVersion.binary)
+
 libraryDependencies ++= Seq(
-  // math & ml
-  "org.spire-math" %% "spire" % "0.9.1", 
-  "org.scalanlp" %% "breeze" % "0.11.2",
-  "org.scalanlp" %% "nak" % "1.3",
+  // algebra, typeclasses, functional 
+  "com.github.mpilquist" %% "simulacrum" % "0.4.0",
+  "org.spire-math" %% "algebra" % "0.3.1",
   // Testing
   "org.scalatest" %% "scalatest" % "2.2.4" % Test
 )
