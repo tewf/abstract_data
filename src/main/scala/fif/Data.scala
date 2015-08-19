@@ -1,6 +1,5 @@
 package fif
 
-import scala.collection.GenTraversableOnce
 import scala.language.higherKinds
 import scala.reflect.ClassTag
 

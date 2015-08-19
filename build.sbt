@@ -1,4 +1,4 @@
-organization := "com.gonitro.research"
+organization := "io.malcolmgreaves"
 
 name := "abstract_data"
 
@@ -22,6 +22,7 @@ import PublishHelpers._
 lazy val devConfig = {
   import CompileScalaJava._
   Config.spark
+  //Config.spark.copy(scala = Config.spark.scala.copy(isScala211 = false))
 }
 
 CompileScalaJava.librarySettings(devConfig)
@@ -37,9 +38,6 @@ resolvers ++= Seq(
 // for simulacrum
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full)
 
-// if your project uses multiple Scala versions, use this for cross building
-addCompilerPlugin("org.spire-math" % "kind-projector" % "0.6.3" cross CrossVersion.binary)
-
 libraryDependencies ++= Seq(
   // algebra, typeclasses, functional 
   "com.github.mpilquist" %% "simulacrum" % "0.4.0",
@@ -51,7 +49,7 @@ libraryDependencies ++= Seq(
 // publishing settings
 
 Publish.settings(
-  repo = Repository.github("Nitro", name.toString),
+  repo = Repository.github("malcolmgreaves", name.toString),
   developers =
     Seq(
       Dev("mgreaves", "Malcolm Greaves")
