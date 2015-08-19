@@ -12,15 +12,23 @@ import PublishHelpers._
 
 // scala & java
 
+//                         :::   NOTE   :::
 // we want to update to JVM 8 ASAP !
 // since we know that we want to be able to use this stuff w/ Spark,
 // we unfortunately have to limit ourselves to jvm 7.
-// once this gets resolved, we'll update: https://issues.apache.org/jira/browse/SPARK-6152
-lazy val jvmVer = JvmRuntime.Jvm7
+// once this gets resolved, we'll update: 
+// [JIRA Issue]     https://issues.apache.org/jira/browse/SPARK-6152
 
-CompileScalaJava.librarySettings()
+lazy val devConfig = {
+  import CompileScalaJava._
+  Config.spark.copy(
+    inc = Some(UseMacro)
+  )
+}
 
-javaOptions := JvmRuntime.settings()
+CompileScalaJava.librarySettings(devConfig)
+
+javaOptions := JvmRuntime.settings(devConfig.jvmVer)
 
 // dependencies and their resolvers
 
