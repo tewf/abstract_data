@@ -21,9 +21,7 @@ import PublishHelpers._
 
 lazy val devConfig = {
   import CompileScalaJava._
-  Config.spark.copy(
-    inc = Some(UseMacro)
-  )
+  Config.spark.copy(scala  = Config.spark.scala.copy(isScala211 = false) )
 }
 
 CompileScalaJava.librarySettings(devConfig)
@@ -51,7 +49,7 @@ libraryDependencies ++= Seq(
   "org.spire-math" %% "algebra" % "0.3.1",
   // TODO : REMOVE and put into separate repo!
   "org.apache.flink" % "flink-scala"   % "0.9.0",
-//  "org.apache.flink" % "flink-clients" % "0.9.0",
+  "org.apache.flink" % "flink-clients" % "0.9.0",
   // Testing
   "org.scalatest" %% "scalatest" % "2.2.4" % Test
 )

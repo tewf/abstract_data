@@ -8,7 +8,7 @@ import scala.reflect.ClassTag
 class TravDataTest extends FunSuite {
 
   // for infix syntax
-  import DataTypeclass.ops._
+  import DataOps.syntax._
 
   // Datatypeclass evidence for all kinds of Traversables
   implicit val t = TravData

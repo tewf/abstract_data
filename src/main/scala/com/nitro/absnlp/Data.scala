@@ -68,3 +68,7 @@ import simulacrum._
   def zipWithIndex[A](d: D[A]): D[(A, Long)]
 
 }
+
+object DataOps {
+  val syntax = Data.ops
+}

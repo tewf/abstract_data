@@ -1,6 +1,5 @@
 package com.nitro.absnlp
 
-import org.apache.flink.api.common.typeinfo.TypeInformation
 import org.apache.flink.api.scala._
 import org.scalatest.FunSuite
 
@@ -14,16 +13,13 @@ import scala.language.higherKinds
 class FlinkDataTest extends FunSuite {
 
   // for infix syntax
-  import DataTypeclass.ops._
+  import DataOps.syntax._
 
   // Datatypeclass evidence for Flink DataSet
   implicit val t = FlinkData
 
-  implicit val tiSeqInt =  FlinkHelper.makeTypeInformation[Int]
-
-
-  val data: DataSet[Int] =
-    ExecutionEnvironment.createLocalEnvironment(2).fromCollection(Seq(1, 2, 3))
+  lazy val data: DataSet[Int] =
+    ExecutionEnvironment.createLocalEnvironment(1).fromElements(1, 2, 3)
 
   test("test map") {
 
@@ -36,15 +32,15 @@ class FlinkDataTest extends FunSuite {
     {
       val changed = addElementwise10(data)
 
-      assert(changed.collect() != data.collect())
-      assert(changed.collect() == List(11, 12, 13))
+      assert(changed != data)
+      assert(t.toSeq(changed)== List(11, 12, 13))
     }
 
     {
       val changed = addElementwise10_tc(data)
 
       assert(changed != data)
-      assert(changed == Seq(11, 12, 13))
+      assert(changed.collect() == Seq(11, 12, 13))
     }
   }
 
