@@ -1,10 +1,10 @@
 package fif
 
-import fif.use.{ Sum, ToMap, TopWords }
+import algebra.Semigroup
+import fif.use.{ Sum, ToMap }
 import org.scalatest.FunSuite
 
 import scala.language.higherKinds
-import scala.reflect.ClassTag
 
 class TravDataTest extends FunSuite {
 
@@ -14,7 +14,9 @@ class TravDataTest extends FunSuite {
   // Datatypeclass evidence for all kinds of Traversables
   implicit val t = TravData
 
-  implicit val sg = TopWords.intSg
+  implicit val sg = new Semigroup[Int] {
+    override def combine(a: Int, b: Int) = a + b
+  }
 
   val data = Seq(1, 2, 3).toTraversable
 

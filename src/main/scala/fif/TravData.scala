@@ -70,7 +70,7 @@ case object TravData extends Data[Traversable] {
 
     implicit val t: Data[Traversable] = TravData
 
-    implicit lazy val s: Data[Seq] = ???
+    //    implicit lazy val s: Data[Seq] = ???
 
   }
 
