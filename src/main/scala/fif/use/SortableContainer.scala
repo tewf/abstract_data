@@ -2,54 +2,41 @@ package fif.use
 
 import scala.language.postfixOps
 
-abstract class SortableContainer[A: Cmp] extends Serializable {
+trait SortableContainer[A] extends Container[A] {
 
-  type Structure
-
-  val maxSize: Option[Int]
-
-  def empty: Structure
-
-  def merge(a: Structure, b: Structure): (Structure, Option[Iterable[A]])
-
-  def insert(item: A)(existing: Structure): (Structure, Option[A])
+  val cmp: Cmp[A]
 
   def sort(existing: Structure): Iterable[A]
+
+  def delete(item: A)(existing: Structure): Option[Structure]
 
 }
 
 object SortableContainer {
 
-  def insert[A](module: SortableContainer[A])(
+  def delete[A](module: SortableContainer[A])(
     existing: module.Structure,
     elements: Iterable[A]
-  ): (module.Structure, Option[Iterable[A]]) = {
+  ): Option[module.Structure] = {
 
-    val (newPq, kickedOut) =
-      elements.foldLeft((existing, Seq.empty[A])) {
-        case ((pq, removing), aItem) =>
-          val (resulting, maybeRemoved) = module.insert(aItem)(pq)
-          (
-            resulting,
-            maybeRemoved match {
-              case None =>
-                removing
-              case Some(removed) =>
-                removing :+ removed
-            }
-          )
+    val (elementsNotInThisStructure, removedAny) =
+      elements.foldLeft((existing, false)) {
+        case ((removing, check), item) =>
+          module.delete(item)(removing) match {
+
+            case Some(removedFrom) =>
+              (removedFrom, true)
+
+            case None =>
+              (removing, check)
+
+          }
       }
 
-    (
-      newPq,
-      if (kickedOut isEmpty)
-        None
-      else
-        Some(kickedOut)
-    )
+    if (removedAny)
+      Some(elementsNotInThisStructure)
+    else
+      None
   }
-
-  def insert[A](module: SortableContainer[A], elements: Iterable[A]): (module.Structure, Option[Iterable[A]]) =
-    insert(module)(module.empty, elements)
 
 }

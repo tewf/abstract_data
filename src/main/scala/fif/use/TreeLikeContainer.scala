@@ -1,6 +1,6 @@
 package fif.use
 
-abstract class TreeLikeContainer[A: Cmp] extends SortableContainer[A] {
+trait TreeLikeContainer[A] extends Container[A] {
 
   sealed abstract class Structure extends Serializable {
     val size: Int
