@@ -2,7 +2,7 @@ package fif.use
 
 import scala.language.postfixOps
 
-trait UnboundedContainer[A] extends SortableContainer[A] {
+trait UnboundedContainer[A] extends Container[A] {
 
   def merge(a: Structure, b: Structure): Structure
 

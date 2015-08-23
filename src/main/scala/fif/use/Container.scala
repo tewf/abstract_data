@@ -9,4 +9,3 @@ trait Container[A] extends Serializable {
   def empty: Structure
 
 }
-

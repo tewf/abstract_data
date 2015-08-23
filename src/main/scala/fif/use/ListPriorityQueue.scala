@@ -4,13 +4,13 @@ import algebra.Eq
 
 object ListPriorityQueue {
 
-  def apply[A: Cmp: Eq](maximumHeapSize: Option[Int]): PriorityQueue[A] =
+  def apply[A: Cmp: Eq](maximumHeapSize: Int): PriorityQueue[A] =
     new PriorityQueue[A] {
 
-      override val maxSize = maximumHeapSize.map { v => math.max(0, v) }
+      override val maxSize = math.max(0, maximumHeapSize)
       // we unpack here to use it internally, if applicable
-      private val isMaxSizeDefined = maxSize.isDefined
-      private val maxSizeIfDefined = maxSize.getOrElse(-1)
+      private val isMaxSizeDefined = true
+      private val maxSizeIfDefined = maxSize
 
       override type Structure = List[A]
 

@@ -2,7 +2,7 @@ package fif.use
 
 import scala.language.postfixOps
 
-trait BoundedContainer[A] extends SortableContainer[A] {
+trait BoundedContainer[A] extends Container[A] {
 
   val maxSize: Int
 

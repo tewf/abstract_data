@@ -4,14 +4,15 @@ import scala.annotation.tailrec
 import scala.collection.mutable.ArrayBuffer
 import scala.language.{ postfixOps, higherKinds }
 
-abstract class MinHeap[A: Cmp] extends SortableContainer[A] with TreeLikeContainer[A] {
+abstract class MinHeap[A: Cmp]
+    extends SortableContainer[A]
+    with TreeLikeContainer[A]
+    with FastMin[A] {
 
   override val cmp = implicitly[Cmp[A]]
 
-  def peekMin(existing: Structure): Option[A] =
+  override def peekMin(existing: Structure): Option[A] =
     existing.map(identity[A])
-
-  def takeMin(existing: Structure): Option[(A, Structure)]
 
   override def sort(existing: Structure): Iterable[A] =
     existing.size match {
@@ -44,21 +45,8 @@ object BoundedMinHeap {
 
   type Type[A] = MinHeap[A] with BoundedContainer[A]
 
-  def apply[A: Cmp](maximumHeapSize: Int): Type[A] = {
-
-    val module = MinHeapImplementation(Some(maximumHeapSize))
-
-    new MinHeap[A] with BoundedContainer[A] {
-
-      override type Structure = module.Structure
-
-      override def insert(item: A)(existing: Structure): (Structure, Option[A]) =
-        module.insert(item)(existing)
-
-      override def merge(a: Structure, b: Structure): (Structure, Option[Iterable[A]]) =
-        module.merge(a, b)
-    }
-  }
+  def apply[A: Cmp](maximumHeapSize: Int): Type[A] =
+    MinHeapImplementation(Some(maximumHeapSize))
 }
 //
 //object UnboundedMinHeap {
@@ -77,7 +65,9 @@ object BoundedMinHeap {
 //    }
 //}
 
-private case class MinHeapImplementation[A: Cmp](maximumHeapSize: Option[Int]) extends MinHeap[A] with BoundedContainer[A] {
+private case class MinHeapImplementation[A: Cmp](maximumHeapSize: Option[Int])
+    extends MinHeap[A]
+    with BoundedContainer[A] {
 
   override val maxSize = maximumHeapSize.map { v => math.max(0, v) }
   // we unpack here to use it internally, if applicable
