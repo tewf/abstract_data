@@ -44,8 +44,6 @@ case object BinarySearchTree {
               case Greater | Equivalent => ???
               // Greater means that we must put
 
-              case Equivalent           => ???
-
             }
 
         }

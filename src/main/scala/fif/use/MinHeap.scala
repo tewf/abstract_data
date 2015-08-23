@@ -11,17 +11,7 @@ abstract class MinHeap[A: Cmp] extends SortableContainer[A] with TreeLikeContain
   def peekMin(existing: Structure): Option[A] =
     existing.map(identity[A])
 
-  def takeMin(existing: Structure): Option[(A, Structure)] =
-    existing match {
-
-      case Empty =>
-        None
-
-      case Full(left, minimum, right) =>
-        // Since we're removing, there's no chance that merge will evaluate
-        // with any removed items (in the Option[Iterable[A]])
-        Some((minimum, mergeUnbounded(left, right)))
-    }
+  def takeMin(existing: Structure): Option[(A, Structure)]
 
   override def sort(existing: Structure): Iterable[A] =
     existing.size match {
@@ -50,40 +40,61 @@ abstract class MinHeap[A: Cmp] extends SortableContainer[A] with TreeLikeContain
   override def delete(existing: Structure): Option[Structure] = ???
 }
 
-final class BoundedMinHeap[A:Cmp] extends MinHeap[A] with BoundedContainer[A] {
+object BoundedMinHeap {
 
-  private lazy val module: MinHeapImplementation[A]
+  type Type[A] = MinHeap[A] with BoundedContainer[A]
 
-  def this(maximumHeapSize: Int) {
-    this.module = MinHeapImplementation(Some(maximumHeapSize))
+  def apply[A: Cmp](maximumHeapSize: Int): Type[A] = {
+
+    val module = MinHeapImplementation(Some(maximumHeapSize))
+
+    new MinHeap[A] with BoundedContainer[A] {
+
+      override type Structure = module.Structure
+
+      override def insert(item: A)(existing: Structure): (Structure, Option[A]) =
+        module.insert(item)(existing)
+
+      override def merge(a: Structure, b: Structure): (Structure, Option[Iterable[A]]) =
+        module.merge(a, b)
+    }
   }
-
-  override def insert(item:A)(existing:Structure): (Structure, Option[A]) =
-    module.insert(item)(existing)
-
-  override def merge(a:Structure,b:Structure): (Structure, Option[Iterable[A]]) =
-    module.merge(a,b)
-
 }
+//
+//object UnboundedMinHeap {
+//
+//  type Type[A] = MinHeap[A] with UnboundedContainer[A]
+//
+//  def apply[A: Cmp]: Type[A] =
+//    new MinHeap[A] with UnboundedContainer[A] {
+//      private val module = MinHeapImplementation(None)
+//
+//      override def merge(a: Structure, b: Structure): Structure =
+//        module.merge(a, b)._1
+//
+//      override def insert(item: A)(existing: Structure): Structure =
+//        module.insert(item)(existing)._1
+//    }
+//}
 
-final class UnboundedMinHeap[A:Cmp] extends MinHeap[A] with UnboundedContainer[A] {
-
-  private val module = MinHeapImplementation(None)
-
-  override def merge(a: Structure, b: Structure): Structure =
-    module.merge(a,b)._1
-
-  override def insert(item: A)(existing: Structure): Structure
-    module.insert(item)(existing)._1
-
-}
-
-private class MinHeapImplementation[A:Cmp](maximumHeapSize: Option[Int]) extends MinHeap[A] with BoundedContainer[A] {
+private case class MinHeapImplementation[A: Cmp](maximumHeapSize: Option[Int]) extends MinHeap[A] with BoundedContainer[A] {
 
   override val maxSize = maximumHeapSize.map { v => math.max(0, v) }
   // we unpack here to use it internally, if applicable
   private val isMaxSizeDefined = maxSize.isDefined
   private val maxSizeIfDefined = maxSize.getOrElse(-1)
+
+  override def takeMin(existing: Structure): Option[(A, Structure)] =
+    existing match {
+
+      case Empty =>
+        None
+
+      case Full(left, minimum, right) =>
+        // Since we're removing, there's no chance that merge will evaluate
+        // with any removed items (in the Option[Iterable[A]])
+        Some((minimum, mergeUnbounded(left, right)))
+    }
 
   override def insert(item: A)(existing: Structure): (Structure, Option[A]) =
     insert_h(item, existing, existing.size)
@@ -110,7 +121,7 @@ private class MinHeapImplementation[A:Cmp](maximumHeapSize: Option[Int]) extends
                 right = newRight
               ),
               kickedOut
-              )
+            )
 
           case Greater | Equivalent =>
             // item is either "less minimum" or "the same priority" to the heap item:
@@ -129,7 +140,7 @@ private class MinHeapImplementation[A:Cmp](maximumHeapSize: Option[Int]) extends
                         right = Empty
                       ),
                       kickedOut
-                      )
+                    )
 
                   case Full(_, _, _) =>
                     val (newLeft, kickedOut) = insert_h(item, Empty, currentSize)
@@ -140,7 +151,7 @@ private class MinHeapImplementation[A:Cmp](maximumHeapSize: Option[Int]) extends
                         right
                       ),
                       kickedOut
-                      )
+                    )
                 }
 
               case Full(_, _, _) =>
@@ -156,7 +167,7 @@ private class MinHeapImplementation[A:Cmp](maximumHeapSize: Option[Int]) extends
                         right = newRight
                       ),
                       kickedOut
-                      )
+                    )
 
                   case Full(_, _, _) =>
                     val ((newLeft, newRight), kickedOut) = newLeftAndRight(item, left, right, currentSize)
@@ -167,7 +178,7 @@ private class MinHeapImplementation[A:Cmp](maximumHeapSize: Option[Int]) extends
                         right = newRight
                       ),
                       kickedOut
-                      )
+                    )
                 }
             }
         }
@@ -232,7 +243,7 @@ private class MinHeapImplementation[A:Cmp](maximumHeapSize: Option[Int]) extends
       else
         (b, a)
 
-    SortableContainer.insert(this)(larger, sort(smaller))
+    BoundedContainer.insert(this)(larger, sort(smaller))
   }
 
   private def mergeUnbounded(a: Structure, b: Structure): Structure =
@@ -295,7 +306,6 @@ private class MinHeapImplementation[A:Cmp](maximumHeapSize: Option[Int]) extends
         }
     }
 }
-
 
 /*
 object MinHeap {
@@ -540,4 +550,4 @@ object MinHeap {
         }
 
 }
-*/
+*/ 

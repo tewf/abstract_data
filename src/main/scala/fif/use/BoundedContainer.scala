@@ -22,7 +22,18 @@ object BoundedContainer {
     val (finalMerged, kickedOut) =
       structures.foldLeft((initial, Seq.empty[A])) {
         case ((merging, removed), next) =>
-          module.merge(merging, next)
+          val (mergedNext, maybeRemvoed) = module.merge(merging, next)
+          (
+            mergedNext,
+            maybeRemvoed match {
+              case Some(rm) =>
+                removed ++ rm
+
+              case None =>
+                removed
+            }
+          )
+
       }
 
     (finalMerged, if (kickedOut isEmpty) None else Some(kickedOut))

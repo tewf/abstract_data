@@ -26,7 +26,7 @@ object UnboundedContainer {
     elements: Iterable[A]
   ): module.Structure =
     elements.foldLeft(existing) {
-      case ((pq, removing), aItem) =>
+      case (pq, aItem) =>
         module.insert(aItem)(pq)
     }
 
