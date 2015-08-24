@@ -38,15 +38,34 @@ abstract class MinHeap[A: Cmp]
         buffer.toIterable
     }
 
-  override def delete(existing: Structure): Option[Structure] = ???
+  override def delete(item: A)(existing: Structure): Option[Structure] = ???
 }
 
 object BoundedMinHeap {
 
   type Type[A] = MinHeap[A] with BoundedContainer[A]
 
-  def apply[A: Cmp](maximumHeapSize: Int): Type[A] =
-    MinHeapImplementation(Some(maximumHeapSize))
+  def apply[A: Cmp](maximumHeapSize: Int): Type[A] = {
+
+    val module = MinHeapImplementation[A](Some(maximumHeapSize))
+    ???
+    //    new MinHeap[A] with BoundedContainer[A] {
+    //
+    //      type Structure = module.Structure
+    //
+    //      override def takeMin(a: module.Structure): Option[(A, Structure)] =
+    //        module.takeMin(a)
+    //
+    //      override def merge(a: Structure, b: Structure): Structure =
+    //        module.merge(a, b)._1
+    //
+    //      override def insert(item: A)(existing: Structure): Structure =
+    //        module.insert(item)(existing)._1
+    //
+    //    }
+
+  }
+
 }
 //
 //object UnboundedMinHeap {
@@ -66,13 +85,13 @@ object BoundedMinHeap {
 //}
 
 private case class MinHeapImplementation[A: Cmp](maximumHeapSize: Option[Int])
-    extends MinHeap[A]
-    with BoundedContainer[A] {
+    extends MinHeap[A] with BoundedContainer[A] {
 
-  override val maxSize = maximumHeapSize.map { v => math.max(0, v) }
   // we unpack here to use it internally, if applicable
-  private val isMaxSizeDefined = maxSize.isDefined
-  private val maxSizeIfDefined = maxSize.getOrElse(-1)
+  val (isMaxSizeDefined, maxSize) = {
+    val ms = maximumHeapSize.map { v => math.max(0, v) }
+    (ms.isDefined, ms.getOrElse(-1))
+  }
 
   override def takeMin(existing: Structure): Option[(A, Structure)] =
     existing match {
@@ -93,7 +112,7 @@ private case class MinHeapImplementation[A: Cmp](maximumHeapSize: Option[Int])
     existing match {
 
       case Empty =>
-        if (!isMaxSizeDefined || currentSize < maxSizeIfDefined)
+        if (!isMaxSizeDefined || currentSize < maxSize)
           (Full(Empty, item, Empty), None)
         else
           (existing, Some(item))
@@ -219,8 +238,8 @@ private case class MinHeapImplementation[A: Cmp](maximumHeapSize: Option[Int])
 
   }
 
-  override def merge(a: Structure, b: Structure): (Structure, Option[Iterable[A]]) =
-    if (maxSize.isDefined && a.size + b.size > maxSizeIfDefined)
+  def merge(a: Structure, b: Structure): (Structure, Option[Iterable[A]]) =
+    if (isMaxSizeDefined && a.size + b.size > maxSize)
       mergeBounded(a, b)
     else
       (mergeUnbounded(a, b), None)
@@ -295,6 +314,7 @@ private case class MinHeapImplementation[A: Cmp](maximumHeapSize: Option[Int])
             }
         }
     }
+
 }
 
 /*

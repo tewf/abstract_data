@@ -20,10 +20,10 @@ object ListPriorityQueue {
       override def peekMin(existing: Structure): Option[A] =
         existing.headOption
 
-      private val sortFn = {
-        val cmp = implicitly[Cmp[A]].compare _
-        (a: A, b: A) => cmp(a, b) == Less
-      }
+      override val cmp = implicitly[Cmp[A]]
+
+      private val sortFn =
+        (a: A, b: A) => cmp.compare(a, b) == Less
 
       private val equality =
         implicitly[Eq[A]].eqv _
@@ -65,6 +65,24 @@ object ListPriorityQueue {
 
       override def sort(existing: Structure): Iterable[A] =
         existing.sortWith(sortFn)
+
+      override def delete(item: A)(existing: Structure): Option[Structure] = {
+        ???
+      }
+
+      private def delete_h(item: A, existing: Structure): Structure =
+        existing match {
+
+          case first :: rest =>
+            if (equality(item, first))
+              delete_h(item, rest)
+            else
+              first +: delete_h(item, rest)
+
+          case Nil =>
+            Nil
+
+        }
     }
 
 }
