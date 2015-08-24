@@ -144,8 +144,6 @@ object BoundedMinHeap {
 
   type Type[A] = MinHeap[A] with BoundedContainer[A, TreeParts.Tree[A]]
 
-  type CommonStructure[A] = TreeParts.Tree[A]
-
   def apply[A: Cmp](maximumHeapSize: Int): Type[A] = {
 
     val module = new MinHeapImplementation[A](Some(maximumHeapSize))
@@ -155,39 +153,44 @@ object BoundedMinHeap {
       override val maxSize = module.maxSize
 
       override def peekMin(existing: Structure): Option[A] =
-        //        module.peekMin(existing)
-        ???
+        module.peekMin(existing)
+
       override def takeMin(a: Structure): Option[(A, Structure)] =
-        //        module.takeMin(a)
-        ???
+        module.takeMin(a)
+
       override def merge(a: Structure, b: Structure): (Structure, Option[Iterable[A]]) =
-        //        module.merge(a, b)
-        ???
+        module.merge(a, b)
 
       override def insert(item: A)(existing: Structure): (Structure, Option[A]) =
         module.insert(item)(existing)
-
     }
-
   }
-
 }
-//
-//object UnboundedMinHeap {
-//
-//  type Type[A] = MinHeap[A] with UnboundedContainer[A]
-//
-//  def apply[A: Cmp]: Type[A] =
-//    new MinHeap[A] with UnboundedContainer[A] {
-//      private val module = MinHeapImplementation(None)
-//
-//      override def merge(a: Structure, b: Structure): Structure =
-//        module.merge(a, b)._1
-//
-//      override def insert(item: A)(existing: Structure): Structure =
-//        module.insert(item)(existing)._1
-//    }
-//}
+
+object UnboundedMinHeap {
+
+  type Type[A] = MinHeap[A] with UnboundedContainer[A, TreeParts.Tree[A]]
+
+  def apply[A: Cmp]: Type[A] = {
+
+    val module = new MinHeapImplementation[A](None)
+
+    new MinHeap[A] with UnboundedContainer[A, TreeParts.Tree[A]] {
+
+      override def peekMin(existing: Structure): Option[A] =
+        module.peekMin(existing)
+
+      override def takeMin(a: Structure): Option[(A, Structure)] =
+        module.takeMin(a)
+
+      override def merge(a: Structure, b: Structure): Structure =
+        module.merge(a, b)._1
+
+      override def insert(item: A)(existing: Structure): Structure =
+        module.insert(item)(existing)._1
+    }
+  }
+}
 
 private class MinHeapImplementation[A: Cmp](maximumHeapSize: Option[Int])
     extends MinHeap[A] with BoundedContainer[A, TreeParts.Tree[A]] {
