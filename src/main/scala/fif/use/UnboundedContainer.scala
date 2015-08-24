@@ -2,7 +2,7 @@ package fif.use
 
 import scala.language.postfixOps
 
-trait UnboundedContainer[A] extends Container[A] {
+trait UnboundedContainer[A, S] extends Container[A, S] {
 
   def merge(a: Structure, b: Structure): Structure
 
@@ -12,7 +12,7 @@ trait UnboundedContainer[A] extends Container[A] {
 
 object UnboundedContainer {
 
-  def merge[A](module: UnboundedContainer[A])(
+  def merge[A, S](module: UnboundedContainer[A, S])(
     initial:    module.Structure,
     structures: module.Structure*
   ): module.Structure =
@@ -21,7 +21,7 @@ object UnboundedContainer {
         module.merge(merging, next)
     }
 
-  def insert[A](module: UnboundedContainer[A])(
+  def insert[A, S](module: UnboundedContainer[A, S])(
     existing: module.Structure,
     elements: Iterable[A]
   ): module.Structure =
@@ -30,7 +30,7 @@ object UnboundedContainer {
         module.insert(aItem)(pq)
     }
 
-  def insert[A](module: UnboundedContainer[A], elements: Iterable[A]): module.Structure =
+  def insert[A, S](module: UnboundedContainer[A, S], elements: Iterable[A]): module.Structure =
     insert(module)(module.empty, elements)
 
 }

@@ -2,7 +2,7 @@ package fif.use
 
 import scala.language.postfixOps
 
-trait BoundedContainer[A] extends Container[A] {
+trait BoundedContainer[A, S] extends Container[A, S] {
 
   val maxSize: Int
 
@@ -14,7 +14,7 @@ trait BoundedContainer[A] extends Container[A] {
 
 object BoundedContainer {
 
-  def merge[A](module: BoundedContainer[A])(
+  def merge[A, S](module: BoundedContainer[A, S])(
     initial:    module.Structure,
     structures: module.Structure*
   ): (module.Structure, Option[Iterable[A]]) = {
@@ -40,7 +40,7 @@ object BoundedContainer {
 
   }
 
-  def insert[A](module: BoundedContainer[A])(
+  def insert[A, S](module: BoundedContainer[A, S])(
     existing: module.Structure,
     elements: Iterable[A]
   ): (module.Structure, Option[Iterable[A]]) = {
@@ -63,7 +63,10 @@ object BoundedContainer {
     (newPq, if (kickedOut isEmpty) None else Some(kickedOut))
   }
 
-  def insert[A](module: BoundedContainer[A], elements: Iterable[A]): (module.Structure, Option[Iterable[A]]) =
+  def insert[A, S](
+    module:   BoundedContainer[A, S],
+    elements: Iterable[A]
+  ): (module.Structure, Option[Iterable[A]]) =
     insert(module)(module.empty, elements)
 
 }

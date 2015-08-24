@@ -1,6 +1,6 @@
 package fif.use
 
-trait FastMin[A] extends Container[A] {
+trait FastMin[A, S] extends Container[A, S] {
 
   def peekMin(existing: Structure): Option[A]
 

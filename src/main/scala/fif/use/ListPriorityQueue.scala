@@ -4,8 +4,8 @@ import algebra.Eq
 
 object ListPriorityQueue {
 
-  def apply[A: Cmp: Eq](maximumHeapSize: Int): PriorityQueue[A] =
-    new PriorityQueue[A] {
+  def apply[A: Cmp: Eq](maximumHeapSize: Int): PriorityQueue[A, List[A]] =
+    new PriorityQueue[A, List[A]] {
 
       override val maxSize = math.max(0, maximumHeapSize)
       // we unpack here to use it internally, if applicable

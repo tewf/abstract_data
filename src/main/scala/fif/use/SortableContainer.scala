@@ -2,7 +2,7 @@ package fif.use
 
 import scala.language.postfixOps
 
-trait SortableContainer[A] extends Container[A] {
+trait SortableContainer[A, S] extends Container[A, S] {
 
   val cmp: Cmp[A]
 
@@ -14,7 +14,7 @@ trait SortableContainer[A] extends Container[A] {
 
 object SortableContainer {
 
-  def delete[A](module: SortableContainer[A])(
+  def delete[A, S](module: SortableContainer[A, S])(
     existing: module.Structure,
     elements: Iterable[A]
   ): Option[module.Structure] = {

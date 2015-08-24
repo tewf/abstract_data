@@ -2,9 +2,9 @@ package fif.use
 
 import scala.language.postfixOps
 
-trait Container[A] extends Serializable {
+trait Container[A, S] extends Serializable {
 
-  type Structure
+  type Structure = S
 
   def empty: Structure
 

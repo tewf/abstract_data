@@ -5,9 +5,9 @@ import scala.collection.mutable.ArrayBuffer
 import scala.language.{ postfixOps, higherKinds }
 
 abstract class MinHeap[A: Cmp]
-    extends SortableContainer[A]
+    extends SortableContainer[A, TreeParts.Tree[A]]
     with TreeLikeContainer[A]
-    with FastMin[A] {
+    with FastMin[A, TreeParts.Tree[A]] {
 
   override val cmp = implicitly[Cmp[A]]
 
@@ -41,43 +41,47 @@ abstract class MinHeap[A: Cmp]
   override def delete(item: A)(existing: Structure): Option[Structure] = ???
 }
 
-//object BoundedMinHeap {
-//
-//  type Type[A] = MinHeap[A] with BoundedContainer[A]
-//
-//  def apply[A: Cmp](maximumHeapSize: Int): Type[A] = {
-//
-//    val module = MinHeapImplementation[A](Some(maximumHeapSize))
-//
-//    new MinHeap[A] with BoundedContainer[A] {
-//
-//      override val maxSize = module.maxSize
-//
-//      type Structure = module.Structure
-//
-//      override def peekMin(existing: Structure): Option[A] =
-//        module.peekMin(existing)
-//
-//      override def takeMin(a: Structure): Option[(A, Structure)] =
-//        module.takeMin(a)
-//
-//      override def merge(a: Structure, b: Structure): (Structure, Option[Iterable[A]]) =
-//        module.merge(a, b)
-//
-//      override def insert(item: A)(existing: Structure): (Structure, Option[A]) =
-//        module.insert(item)(existing)
-//
-//      override def delete(item: A)(existing: Structure): Option[Structure] =
-//        module.delete(item)(existing)
-//
-//      override def sort(existing: Structure): Iterable[A] =
-//        module.sort(existing)
-//
-//    }
-//
-//  }
-//
-//}
+object BoundedMinHeap {
+
+  type Type[A] = MinHeap[A] with BoundedContainer[A, TreeParts.Tree[A]]
+
+  type CommonStructure[A] = TreeParts.Tree[A]
+
+  def apply[A: Cmp](maximumHeapSize: Int): Type[A] = {
+
+    val module = new MinHeapImplementation[A](Some(maximumHeapSize))
+
+    new MinHeap[A] with BoundedContainer[A, TreeParts.Tree[A]] {
+
+      override val maxSize = module.maxSize
+
+      override def peekMin(existing: Structure): Option[A] =
+        //        module.peekMin(existing)
+        ???
+      override def takeMin(a: Structure): Option[(A, Structure)] =
+        //        module.takeMin(a)
+        ???
+      override def merge(a: Structure, b: Structure): (Structure, Option[Iterable[A]]) =
+        //        module.merge(a, b)
+        ???
+
+      override def insert(item: A)(existing: Structure): (Structure, Option[A]) = {
+        val (a, b) = module.insert(item)(existing.asInstanceOf[module.Structure])
+        (a.asInstanceOf[Structure], b)
+      }
+
+      override def delete(item: A)(existing: Structure): Option[Structure] =
+        module.delete(item)(existing.asInstanceOf[module.Structure]).map(_.asInstanceOf[Structure])
+
+      override def sort(existing: Structure): Iterable[A] =
+        //        module.sort(existing)
+        ???
+
+    }
+
+  }
+
+}
 //
 //object UnboundedMinHeap {
 //
@@ -95,8 +99,10 @@ abstract class MinHeap[A: Cmp]
 //    }
 //}
 
-private case class MinHeapImplementation[A: Cmp](maximumHeapSize: Option[Int])
-    extends MinHeap[A] with BoundedContainer[A] {
+private class MinHeapImplementation[A: Cmp](maximumHeapSize: Option[Int])
+    extends MinHeap[A] with BoundedContainer[A, TreeParts.Tree[A]] {
+
+  import TreeParts._
 
   // we unpack here to use it internally, if applicable
   val (isMaxSizeDefined, maxSize) = {
