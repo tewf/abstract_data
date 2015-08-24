@@ -39,6 +39,10 @@ abstract class MinHeap[A: Cmp]
     }
 
   override def delete(item: A)(existing: Structure): Option[Structure] = ???
+
+  private def delete_h(item: A, existing: Structure) = {
+
+  }
 }
 
 object BoundedMinHeap {
@@ -65,10 +69,8 @@ object BoundedMinHeap {
         //        module.merge(a, b)
         ???
 
-      override def insert(item: A)(existing: Structure): (Structure, Option[A]) = {
-        val (a, b) = module.insert(item)(existing.asInstanceOf[module.Structure])
-        (a.asInstanceOf[Structure], b)
-      }
+      override def insert(item: A)(existing: Structure): (Structure, Option[A]) =
+        module.insert(item)(existing)
 
       override def delete(item: A)(existing: Structure): Option[Structure] =
         module.delete(item)(existing.asInstanceOf[module.Structure]).map(_.asInstanceOf[Structure])

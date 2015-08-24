@@ -2,6 +2,8 @@ package fif.use
 
 import algebra.Eq
 
+import scala.annotation.tailrec
+
 object ListPriorityQueue {
 
   def apply[A: Cmp: Eq](maximumHeapSize: Int): PriorityQueue[A, List[A]] =
@@ -67,21 +69,31 @@ object ListPriorityQueue {
         existing.sortWith(sortFn)
 
       override def delete(item: A)(existing: Structure): Option[Structure] = {
-        ???
+        val (itemNotPresent, someChange) = delete_h(item, existing)
+        if (someChange)
+          Some(itemNotPresent)
+        else
+          None
       }
 
-      private def delete_h(item: A, existing: Structure): Structure =
+      /**
+       * ASSUMPTION
+       *  -- Parameter deletedAny has default value false.
+       */
+      private def delete_h(item: A, existing: Structure, deletedAny: Boolean = false): (Structure, Boolean) =
         existing match {
 
           case first :: rest =>
-            if (equality(item, first))
-              delete_h(item, rest)
-            else
-              first +: delete_h(item, rest)
+            if (equality(item, first)) {
+              (delete_h(item, rest)._1, true)
+
+            } else {
+              val (continue, changed) = delete_h(item, rest, deletedAny)
+              (continue, changed || deletedAny)
+            }
 
           case Nil =>
-            Nil
-
+            (Nil, deletedAny)
         }
     }
 
