@@ -41,32 +41,43 @@ abstract class MinHeap[A: Cmp]
   override def delete(item: A)(existing: Structure): Option[Structure] = ???
 }
 
-object BoundedMinHeap {
-
-  type Type[A] = MinHeap[A] with BoundedContainer[A]
-
-  def apply[A: Cmp](maximumHeapSize: Int): Type[A] = {
-
-    val module = MinHeapImplementation[A](Some(maximumHeapSize))
-    ???
-    //    new MinHeap[A] with BoundedContainer[A] {
-    //
-    //      type Structure = module.Structure
-    //
-    //      override def takeMin(a: module.Structure): Option[(A, Structure)] =
-    //        module.takeMin(a)
-    //
-    //      override def merge(a: Structure, b: Structure): Structure =
-    //        module.merge(a, b)._1
-    //
-    //      override def insert(item: A)(existing: Structure): Structure =
-    //        module.insert(item)(existing)._1
-    //
-    //    }
-
-  }
-
-}
+//object BoundedMinHeap {
+//
+//  type Type[A] = MinHeap[A] with BoundedContainer[A]
+//
+//  def apply[A: Cmp](maximumHeapSize: Int): Type[A] = {
+//
+//    val module = MinHeapImplementation[A](Some(maximumHeapSize))
+//
+//    new MinHeap[A] with BoundedContainer[A] {
+//
+//      override val maxSize = module.maxSize
+//
+//      type Structure = module.Structure
+//
+//      override def peekMin(existing: Structure): Option[A] =
+//        module.peekMin(existing)
+//
+//      override def takeMin(a: Structure): Option[(A, Structure)] =
+//        module.takeMin(a)
+//
+//      override def merge(a: Structure, b: Structure): (Structure, Option[Iterable[A]]) =
+//        module.merge(a, b)
+//
+//      override def insert(item: A)(existing: Structure): (Structure, Option[A]) =
+//        module.insert(item)(existing)
+//
+//      override def delete(item: A)(existing: Structure): Option[Structure] =
+//        module.delete(item)(existing)
+//
+//      override def sort(existing: Structure): Iterable[A] =
+//        module.sort(existing)
+//
+//    }
+//
+//  }
+//
+//}
 //
 //object UnboundedMinHeap {
 //
