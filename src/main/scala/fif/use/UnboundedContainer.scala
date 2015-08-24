@@ -23,15 +23,18 @@ object UnboundedContainer {
 
   def insert[A, S](module: UnboundedContainer[A, S])(
     existing: module.Structure,
-    elements: Iterable[A]
+    elements: A*
   ): module.Structure =
     elements.foldLeft(existing) {
       case (pq, aItem) =>
         module.insert(aItem)(pq)
     }
 
-  def insert[A, S](module: UnboundedContainer[A, S], elements: Iterable[A]): module.Structure =
-    insert(module)(module.empty, elements)
+  def insert[A, S](
+    module:   UnboundedContainer[A, S],
+    elements: A*
+  ): module.Structure =
+    insert(module)(module.empty, elements: _*)
 
 }
 

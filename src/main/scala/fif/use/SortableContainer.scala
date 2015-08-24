@@ -16,7 +16,7 @@ object SortableContainer {
 
   def delete[A, S](module: SortableContainer[A, S])(
     existing: module.Structure,
-    elements: Iterable[A]
+    elements: A*
   ): Option[module.Structure] = {
 
     val (elementsNotInThisStructure, removedAny) =

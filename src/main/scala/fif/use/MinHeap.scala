@@ -271,7 +271,7 @@ private class MinHeapImplementation[A: Cmp](maximumHeapSize: Option[Int])
       else
         (b, a)
 
-    BoundedContainer.insert(this)(larger, sort(smaller))
+    BoundedContainer.insert(this)(larger, sort(smaller).toSeq: _*)
   }
 
   private def mergeUnbounded(a: Structure, b: Structure): Structure =

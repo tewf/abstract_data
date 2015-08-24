@@ -42,7 +42,7 @@ object BoundedContainer {
 
   def insert[A, S](module: BoundedContainer[A, S])(
     existing: module.Structure,
-    elements: Iterable[A]
+    elements: A*
   ): (module.Structure, Option[Iterable[A]]) = {
 
     val (newPq, kickedOut) =
@@ -65,8 +65,8 @@ object BoundedContainer {
 
   def insert[A, S](
     module:   BoundedContainer[A, S],
-    elements: Iterable[A]
+    elements: A*
   ): (module.Structure, Option[Iterable[A]]) =
-    insert(module)(module.empty, elements)
+    insert(module)(module.empty, elements: _*)
 
 }

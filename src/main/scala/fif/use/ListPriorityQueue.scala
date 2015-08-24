@@ -56,7 +56,7 @@ object ListPriorityQueue {
             if (one.size > two.size) (one, two)
             else (two, one)
 
-          BoundedContainer.insert(this)(larger, smaller.toIterable)
+          BoundedContainer.insert(this)(larger, smaller: _*)
         }
 
       override def takeMin(existing: List[A]): Option[(A, Structure)] =
