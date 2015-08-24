@@ -9,7 +9,7 @@ import scala.reflect.ClassTag
 
 class BoundedDedupePriorityQueueTest extends FunSuite {
 
-  def makePriorityQueueModule(limit: Option[Int]) = {
+  def makePriorityQueueModule(limit: Int) = {
 
     implicit val doubleCmp: Cmp[(String, Double)] =
       new Cmp[(String, Double)] {
@@ -53,9 +53,9 @@ class BoundedDedupePriorityQueueTest extends FunSuite {
 
     val limit = 6
 
-    val priorityQueueModule = makePriorityQueueModule(Some(limit))
+    val priorityQueueModule = makePriorityQueueModule(limit)
 
-    val (finalPqInstance, removed) = SortableContainer.insert(priorityQueueModule, values)
+    val (finalPqInstance, removed) = BoundedContainer.insert(priorityQueueModule, values: _*)
     assert(removed.isDefined && removed.get.size == 5)
 
     val sorted = priorityQueueModule.sort(finalPqInstance)
@@ -72,7 +72,7 @@ class BoundedDedupePriorityQueueTest extends FunSuite {
 
     val module = makePriorityQueueModule(None)
 
-    val (pq, removed) = SortableContainer.insert(module, values)
+    val (pq, removed) = SortableContainer.insert(module, values: _*)
     assert(removed.isEmpty)
 
     val expecting = Seq(

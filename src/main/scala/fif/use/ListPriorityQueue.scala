@@ -6,95 +6,132 @@ import scala.annotation.tailrec
 
 object ListPriorityQueue {
 
-  def apply[A: Cmp: Eq](maximumHeapSize: Int): PriorityQueue[A, List[A]] =
-    new PriorityQueue[A, List[A]] {
+  object Bounded {
 
-      override val maxSize = math.max(0, maximumHeapSize)
-      // we unpack here to use it internally, if applicable
-      private val isMaxSizeDefined = true
-      private val maxSizeIfDefined = maxSize
+    type Type[A] = PriorityQueue[A, List[A]] with BoundedContainer[A, List[A]]
 
-      override type Structure = List[A]
+    def apply[A: Cmp: Eq](maximumHeapSize: Int): Type[A] =
+      new PriorityQueue[A, List[A]] with BoundedContainer[A, List[A]] {
 
-      override val empty: Structure =
-        List.empty[A]
+        val module = new ListPriorityQueue[A](Some(maximumHeapSize))
 
-      override def peekMin(existing: Structure): Option[A] =
-        existing.headOption
+        override def insert(item: A)(existing: Structure): (Structure, Option[A]) =
+          module.insert(item)(existing)
 
-      override val cmp = implicitly[Cmp[A]]
+        override def merge(one: Structure, two: Structure): (Structure, Option[Iterable[A]]) =
+          module.merge(one, two)
 
-      private val sortFn =
-        (a: A, b: A) => cmp.compare(a, b) == Less
+        override def delete(item: A)(existing: Structure): Option[Structure] =
+          module.delete(item)(existing)
 
-      private val equality =
-        implicitly[Eq[A]].eqv _
+        override def sort(existing: Structure): Iterable[A] =
+          module.sort(existing)
 
-      private def contains(item: A, existing: Structure): Boolean =
-        existing.exists(x => equality(x, item))
+        override def peekMin(existing: Structure): Option[A] =
+          module.peekMin(existing)
 
-      override def insert(item: A)(existing: Structure): (Structure, Option[A]) =
-        if (contains(item, existing))
-          (existing, None)
+        override def takeMin(existing: List[A]): Option[(A, Structure)] =
+          module.takeMin(existing)
 
-        else {
-          val newList = (existing :+ item).sortWith(sortFn)
-          if (isMaxSizeDefined && newList.size > maxSizeIfDefined) {
-            val end = math.min(newList.size, maxSizeIfDefined)
-            (newList.slice(0, end), Some(newList(end)))
+        override val empty = module.empty
 
-          } else
-            (newList, None)
-        }
+        override val maxSize = module.maxSize
 
-      override def merge(one: Structure, two: Structure): (Structure, Option[Iterable[A]]) =
-        if (one.isEmpty && two.isEmpty)
-          (empty, None)
+        override val cmp = module.cmp
+      }
+  }
 
-        else {
-          val (smaller, larger) =
-            if (one.size > two.size) (one, two)
-            else (two, one)
+}
 
-          BoundedContainer.insert(this)(larger, smaller: _*)
-        }
+private class ListPriorityQueue[A: Cmp: Eq](maximumHeapSize: Option[Int])
+    extends PriorityQueue[A, List[A]]
+    with BoundedContainer[A, List[A]] {
 
-      override def takeMin(existing: List[A]): Option[(A, Structure)] =
-        existing.headOption
-          .map { head =>
-            (head, existing.slice(1, existing.size))
-          }
+  override type Structure = List[A]
 
-      override def sort(existing: Structure): Iterable[A] =
-        existing.sortWith(sortFn)
+  val (isMaxSizeDefined, maxSize) = {
+    val ms = maximumHeapSize.map { v => math.max(0, v) }
+    (ms.isDefined, ms.getOrElse(-1))
+  }
 
-      override def delete(item: A)(existing: Structure): Option[Structure] = {
-        val (itemNotPresent, someChange) = delete_h(item, existing)
-        if (someChange)
-          Some(itemNotPresent)
-        else
-          None
+  override val empty: Structure =
+    List.empty[A]
+
+  override def peekMin(existing: Structure): Option[A] =
+    existing.headOption
+
+  override val cmp = implicitly[Cmp[A]]
+
+  private val sortFn =
+    (a: A, b: A) => cmp.compare(a, b) == Less
+
+  private val equality =
+    implicitly[Eq[A]].eqv _
+
+  def contains(item: A, existing: Structure): Boolean =
+    existing.exists(x => equality(x, item))
+
+  override def insert(item: A)(existing: Structure): (Structure, Option[A]) =
+    if (contains(item, existing))
+      (existing, None)
+
+    else {
+      val newList = (existing :+ item).sortWith(sortFn)
+      if (isMaxSizeDefined && newList.size > maxSize) {
+        val end = math.min(newList.size, maxSize)
+        (newList.slice(0, end), Some(newList(end)))
+
+      } else
+        (newList, None)
+    }
+
+  override def merge(one: Structure, two: Structure): (Structure, Option[Iterable[A]]) =
+    if (one.isEmpty && two.isEmpty)
+      (empty, None)
+
+    else {
+      val (smaller, larger) =
+        if (one.size > two.size) (one, two)
+        else (two, one)
+
+      BoundedContainer.insert(this)(larger, smaller: _*)
+    }
+
+  override def takeMin(existing: List[A]): Option[(A, Structure)] =
+    existing.headOption
+      .map { head =>
+        (head, existing.slice(1, existing.size))
       }
 
-      /**
-       * ASSUMPTION
-       *  -- Parameter deletedAny has default value false.
-       */
-      private def delete_h(item: A, existing: Structure, deletedAny: Boolean = false): (Structure, Boolean) =
-        existing match {
+  override def sort(existing: Structure): Iterable[A] =
+    existing.sortWith(sortFn)
 
-          case first :: rest =>
-            if (equality(item, first)) {
-              (delete_h(item, rest)._1, true)
+  override def delete(item: A)(existing: Structure): Option[Structure] = {
+    val (itemNotPresent, someChange) = delete_h(item, existing)
+    if (someChange)
+      Some(itemNotPresent)
+    else
+      None
+  }
 
-            } else {
-              val (continue, changed) = delete_h(item, rest, deletedAny)
-              (continue, changed || deletedAny)
-            }
+  /**
+   * ASSUMPTION
+   *  -- Parameter deletedAny has default value false.
+   */
+  private def delete_h(item: A, existing: Structure, deletedAny: Boolean = false): (Structure, Boolean) =
+    existing match {
 
-          case Nil =>
-            (Nil, deletedAny)
+      case first :: rest =>
+        if (equality(item, first)) {
+          (delete_h(item, rest)._1, true)
+
+        } else {
+          val (continue, changed) = delete_h(item, rest, deletedAny)
+          (continue, changed || deletedAny)
         }
+
+      case Nil =>
+        (Nil, deletedAny)
     }
 
 }

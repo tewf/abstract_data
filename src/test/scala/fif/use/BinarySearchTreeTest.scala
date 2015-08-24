@@ -26,7 +26,7 @@ class BinarySearchTreeTest extends FunSuite {
 
   val nElementsForRand = 1000
 
-  ignore(s"sort list of $nElementsForRand numbers drawn uniformly at random"){
+  ignore(s"sort list of $nElementsForRand numbers drawn uniformly at random") {
     val elements = (0 until nElementsForRand).map(_ => rand.nextDouble() * 100).toSeq
     val expected = elements.sorted
     ???
@@ -39,7 +39,5 @@ class BinarySearchTreeTest extends FunSuite {
     val expected = elements.sorted
     ???
   }
-
-
 
 }

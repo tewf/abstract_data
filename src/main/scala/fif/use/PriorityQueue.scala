@@ -8,4 +8,3 @@ import algebra.Eq
 abstract class PriorityQueue[A: Cmp: Eq, S]
   extends SortableContainer[A, S]
   with FastMin[A, S]
-  with BoundedContainer[A, S]

@@ -193,7 +193,8 @@ object UnboundedMinHeap {
 }
 
 private class MinHeapImplementation[A: Cmp](maximumHeapSize: Option[Int])
-    extends MinHeap[A] with BoundedContainer[A, TreeParts.Tree[A]] {
+    extends MinHeap[A]
+    with BoundedContainer[A, TreeParts.Tree[A]] {
 
   import TreeParts._
 
