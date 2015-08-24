@@ -38,11 +38,106 @@ abstract class MinHeap[A: Cmp]
         buffer.toIterable
     }
 
-  override def delete(item: A)(existing: Structure): Option[Structure] = ???
-
-  private def delete_h(item: A, existing: Structure) = {
-
+  override def delete(item: A)(existing: Structure): Option[Structure] = {
+    val (itemNotPresent, someChange) = delete_h(item, existing)
+    if (someChange)
+      Some(itemNotPresent)
+    else
+      None
   }
+
+  import TreeParts._
+
+  /**
+   * ASSUMPTION
+   *  -- Parameter deletedAny has default value false.
+   */
+  private def delete_h(item: A, existing: Structure, deletedAny: Boolean = false): (Structure, Boolean) =
+    existing match {
+
+      case Full(left, heapItem, right) =>
+
+        val doDeletion = cmp.compare(item, heapItem) == Equivalent
+
+        val (ltDeleted, ltAnyDeleted) = delete_h(item, left, deletedAny || doDeletion)
+        val (rtDeleted, rtAnyDeleted) = delete_h(item, right, deletedAny || doDeletion)
+
+        if (doDeletion)
+          (mergeUnbounded(ltDeleted, rtDeleted), true)
+
+        else
+          (
+            Full(
+              left = ltDeleted,
+              item = heapItem,
+              right = rtDeleted
+            ),
+            ltAnyDeleted || rtAnyDeleted
+          )
+
+      case Empty =>
+        (Empty, deletedAny)
+    }
+
+  private[use] def mergeUnbounded(a: Structure, b: Structure): Structure =
+    a match {
+
+      case Empty =>
+        b match {
+
+          case Empty =>
+            Empty
+
+          case Full(_, _, _) =>
+            b
+        }
+
+      case Full(aLeft, aItem, aRight) =>
+        b match {
+
+          case Empty =>
+            a
+
+          case Full(bLeft, bItem, bRight) =>
+            cmp.compare(aItem, bItem) match {
+
+              case Less =>
+                // a is more minium than b, so "a" should become the new
+                // head of this heap that we're currently merging together
+                Full(
+                  left = aLeft,
+                  item = aItem,
+                  right = mergeUnbounded(aRight, b)
+                )
+
+              case Greater =>
+                // b is more minum than a, so "b" should become the new
+                // head of this heap that we're currently merging together
+                Full(
+                  left = mergeUnbounded(a, bLeft),
+                  item = bItem,
+                  right = bRight
+                )
+
+              case Equivalent =>
+                // a and b are equivalent in priority, chose how to merge
+                // based upon whichever Structure is smaller in size
+                // (This is to keep the heap as balanced as we can!)
+                if (a.size < b.size)
+                  Full(
+                    left = aLeft,
+                    item = aItem,
+                    right = mergeUnbounded(aRight, b)
+                  )
+                else
+                  Full(
+                    left = mergeUnbounded(a, bLeft),
+                    item = bItem,
+                    right = bRight
+                  )
+            }
+        }
+    }
 }
 
 object BoundedMinHeap {
@@ -71,13 +166,6 @@ object BoundedMinHeap {
 
       override def insert(item: A)(existing: Structure): (Structure, Option[A]) =
         module.insert(item)(existing)
-
-      override def delete(item: A)(existing: Structure): Option[Structure] =
-        module.delete(item)(existing.asInstanceOf[module.Structure]).map(_.asInstanceOf[Structure])
-
-      override def sort(existing: Structure): Iterable[A] =
-        //        module.sort(existing)
-        ???
 
     }
 
@@ -273,66 +361,6 @@ private class MinHeapImplementation[A: Cmp](maximumHeapSize: Option[Int])
 
     BoundedContainer.insert(this)(larger, sort(smaller).toSeq: _*)
   }
-
-  private def mergeUnbounded(a: Structure, b: Structure): Structure =
-    a match {
-
-      case Empty =>
-        b match {
-
-          case Empty =>
-            Empty
-
-          case Full(_, _, _) =>
-            b
-        }
-
-      case Full(aLeft, aItem, aRight) =>
-        b match {
-
-          case Empty =>
-            a
-
-          case Full(bLeft, bItem, bRight) =>
-            cmp.compare(aItem, bItem) match {
-
-              case Less =>
-                // a is more minium than b, so "a" should become the new
-                // head of this heap that we're currently merging together
-                Full(
-                  left = aLeft,
-                  item = aItem,
-                  right = mergeUnbounded(aRight, b)
-                )
-
-              case Greater =>
-                // b is more minum than a, so "b" should become the new
-                // head of this heap that we're currently merging together
-                Full(
-                  left = mergeUnbounded(a, bLeft),
-                  item = bItem,
-                  right = bRight
-                )
-
-              case Equivalent =>
-                // a and b are equivalent in priority, chose how to merge
-                // based upon whichever Structure is smaller in size
-                // (This is to keep the heap as balanced as we can!)
-                if (a.size < b.size)
-                  Full(
-                    left = aLeft,
-                    item = aItem,
-                    right = mergeUnbounded(aRight, b)
-                  )
-                else
-                  Full(
-                    left = mergeUnbounded(a, bLeft),
-                    item = bItem,
-                    right = bRight
-                  )
-            }
-        }
-    }
 
 }
 
