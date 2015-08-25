@@ -42,6 +42,38 @@ object ListPriorityQueue {
       }
   }
 
+  object Unbounded {
+
+    type Type[A] = PriorityQueue[A, List[A]] with UnboundedContainer[A, List[A]]
+
+    def apply[A: Cmp: Eq]: Type[A] =
+      new PriorityQueue[A, List[A]] with UnboundedContainer[A, List[A]] {
+
+        val module = new ListPriorityQueue[A](None)
+
+        override def insert(item: A)(existing: Structure): Structure =
+          module.insert(item)(existing)._1
+
+        override def merge(one: Structure, two: Structure): Structure =
+          module.merge(one, two)._1
+
+        override def delete(item: A)(existing: Structure): Option[Structure] =
+          module.delete(item)(existing)
+
+        override def sort(existing: Structure): Iterable[A] =
+          module.sort(existing)
+
+        override def peekMin(existing: Structure): Option[A] =
+          module.peekMin(existing)
+
+        override def takeMin(existing: List[A]): Option[(A, Structure)] =
+          module.takeMin(existing)
+
+        override val empty = module.empty
+
+        override val cmp = module.cmp
+      }
+  }
 }
 
 private class ListPriorityQueue[A: Cmp: Eq](maximumHeapSize: Option[Int])
