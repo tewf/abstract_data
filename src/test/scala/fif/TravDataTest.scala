@@ -1,19 +1,22 @@
 package fif
 
+import algebra.Semigroup
+import fif.ops.{ Sum, ToMap }
 import org.scalatest.FunSuite
 
 import scala.language.higherKinds
-import scala.reflect.ClassTag
 
 class TravDataTest extends FunSuite {
 
   // for infix syntax
-  import DataOps.syntax._
+  import DataOps.infix._
 
   // Datatypeclass evidence for all kinds of Traversables
   implicit val t = TravData
 
-  import t.Implicits._
+  implicit val sg = new Semigroup[Int] {
+    override def combine(a: Int, b: Int) = a + b
+  }
 
   val data = Seq(1, 2, 3).toTraversable
 
@@ -155,10 +158,7 @@ class TravDataTest extends FunSuite {
   }
 
   test("sum") {
-      def s[D[_]: Data](data: D[Int]): Int =
-        data.sum
-
-    assert(s(data) == 6)
+    assert(Sum(data) == 6)
   }
 
   test("filter") {
@@ -187,10 +187,7 @@ class TravDataTest extends FunSuite {
   }
 
   test("toMap") {
-      def toM[D[_]: Data](data: D[Int]): Map[Int, Int] =
-        data.map(x => (x, x)).toMap
-
-    assert(toM(data) == Map(1 -> 1, 2 -> 2, 3 -> 3))
+    assert(ToMap(data.map(x => (x, x))) == Map(1 -> 1, 2 -> 2, 3 -> 3))
   }
 
   test("zipWithIndex") {
@@ -207,10 +204,10 @@ class TravDataTest extends FunSuite {
     assert(foo(data) == Seq((1, 1), (2, 2), (3, 3)))
   }
 
-  test("implicits to Traversable") {
-    import t.Implicits._
-    val ignore0: Traversable[Int] = seq2data(Seq(1))
-    val ignore1: Traversable[Int] = array2Data(Array(1))
-  }
+  //  test("implicits to Traversable") {
+  //    import t.Implicits._
+  //    val ignore0: Traversable[Int] = seq2data(Seq(1))
+  //    val ignore1: Traversable[Int] = array2Data(Array(1))
+  //  }
 
 }
