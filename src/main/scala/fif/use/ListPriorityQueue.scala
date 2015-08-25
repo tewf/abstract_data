@@ -3,6 +3,7 @@ package fif.use
 import algebra.Eq
 
 import scala.annotation.tailrec
+import scala.language.postfixOps
 
 object ListPriorityQueue {
 
@@ -68,8 +69,39 @@ private class ListPriorityQueue[A: Cmp: Eq](maximumHeapSize: Option[Int])
   private val equality =
     implicitly[Eq[A]].eqv _
 
+  /**
+   * Assumptions
+   *  -- Input structure (existing) is in sorted order, ascending.
+   *  -- This is the assumption for all instances of ListPriorityQueue[A]#Structure
+   */
   def contains(item: A, existing: Structure): Boolean =
-    existing.exists(x => equality(x, item))
+    binarySearch(item, existing)
+
+  @tailrec private def binarySearch(item: A, existing: Structure): Boolean =
+    if (existing isEmpty)
+      false
+
+    else {
+
+      val middleIndex = existing.size / 2
+      val middleItem = existing(middleIndex)
+
+      if (equality(item, middleItem))
+        true
+
+      else
+        binarySearch(
+          item,
+          cmp.compare(item, middleItem) match {
+
+            case Less =>
+              existing.slice(0, middleIndex)
+
+            case Greater | Equivalent =>
+              existing.slice(middleIndex + 1, existing.size)
+          }
+        )
+    }
 
   override def insert(item: A)(existing: Structure): (Structure, Option[A]) =
     if (contains(item, existing))
