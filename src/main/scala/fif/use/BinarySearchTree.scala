@@ -1,9 +1,15 @@
 package fif.use
 
 abstract class BinarySearchTree[A: Cmp]
-  extends SortableContainer[A, TreeParts.Tree[A]]
-  with TreeLikeContainer[A]
-  with SearchableContainer[A, TreeParts.Tree[A]]
+    extends SortableContainer[A, TreeParts.Tree[A]]
+    with TreeLikeContainer[A]
+    with SearchableContainer[A, TreeParts.Tree[A]] {
+
+  type Bounded = BinarySearchTree[A] with BoundedContainer[A, this.Structure]
+
+  type Unbounded = BinarySearchTree[A] with UnboundedContainer[A, this.Structure]
+
+}
 
 //case object BinarySearchTree {
 //

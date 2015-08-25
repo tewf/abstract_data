@@ -9,9 +9,7 @@ object ListPriorityQueue {
 
   object Bounded {
 
-    type Type[A] = PriorityQueue[A, List[A]] with BoundedContainer[A, List[A]]
-
-    def apply[A: Cmp: Eq](maximumHeapSize: Int): Type[A] =
+    def apply[A: Cmp: Eq](maximumHeapSize: Int): PriorityQueue[A, List[A]]#Bounded =
       new PriorityQueue[A, List[A]] with BoundedContainer[A, List[A]] {
 
         val module = new ListPriorityQueue[A](Some(maximumHeapSize))
@@ -47,9 +45,7 @@ object ListPriorityQueue {
 
   object Unbounded {
 
-    type Type[A] = PriorityQueue[A, List[A]] with UnboundedContainer[A, List[A]]
-
-    def apply[A: Cmp: Eq]: Type[A] =
+    def apply[A: Cmp: Eq]: PriorityQueue[A, List[A]]#Unbounded =
       new PriorityQueue[A, List[A]] with UnboundedContainer[A, List[A]] {
 
         val module = new ListPriorityQueue[A](None)

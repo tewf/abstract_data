@@ -9,6 +9,9 @@ abstract class MinHeap[A: Cmp]
     with TreeLikeContainer[A]
     with FastMin[A, TreeParts.Tree[A]] {
 
+  type Bounded = MinHeap[A] with BoundedContainer[A, this.Structure]
+  type Unbounded = MinHeap[A] with UnboundedContainer[A, this.Structure]
+
   override val cmp = implicitly[Cmp[A]]
 
   override def peekMin(existing: Structure): Option[A] =
@@ -144,9 +147,7 @@ object MinHeap {
 
   object Bounded {
 
-    type Type[A] = MinHeap[A] with BoundedContainer[A, TreeParts.Tree[A]]
-
-    def apply[A: Cmp](maximumHeapSize: Int): Type[A] = {
+    def apply[A: Cmp](maximumHeapSize: Int): MinHeap[A]#Bounded = {
 
       val module = new MinHeapImplementation[A](Some(maximumHeapSize))
 
@@ -171,9 +172,7 @@ object MinHeap {
 
   object Unbounded {
 
-    type Type[A] = MinHeap[A] with UnboundedContainer[A, TreeParts.Tree[A]]
-
-    def apply[A: Cmp]: Type[A] = {
+    def apply[A: Cmp]: MinHeap[A]#Unbounded = {
 
       val module = new MinHeapImplementation[A](None)
 
