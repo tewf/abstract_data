@@ -28,6 +28,9 @@ object ListPriorityQueue {
         override def sort(existing: Structure): Iterable[A] =
           module.sort(existing)
 
+        override def contains(item: A)(existing: Structure): Boolean =
+          module.contains(item)(existing)
+
         override def peekMin(existing: Structure): Option[A] =
           module.peekMin(existing)
 
@@ -62,6 +65,9 @@ object ListPriorityQueue {
 
         override def sort(existing: Structure): Iterable[A] =
           module.sort(existing)
+
+        override def contains(item: A)(existing: Structure): Boolean =
+          module.contains(item)(existing)
 
         override def peekMin(existing: Structure): Option[A] =
           module.peekMin(existing)
@@ -106,7 +112,7 @@ private class ListPriorityQueue[A: Cmp: Eq](maximumHeapSize: Option[Int])
    *  -- Input structure (existing) is in sorted order, ascending.
    *  -- This is the assumption for all instances of ListPriorityQueue[A]#Structure
    */
-  def contains(item: A, existing: Structure): Boolean =
+  override def contains(item: A)(existing: Structure): Boolean =
     binarySearch(item, existing)
 
   @tailrec private def binarySearch(item: A, existing: Structure): Boolean =
@@ -136,7 +142,7 @@ private class ListPriorityQueue[A: Cmp: Eq](maximumHeapSize: Option[Int])
     }
 
   override def insert(item: A)(existing: Structure): (Structure, Option[A]) =
-    if (contains(item, existing))
+    if (contains(item)(existing))
       (existing, None)
 
     else {

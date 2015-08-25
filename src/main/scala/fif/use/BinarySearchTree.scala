@@ -1,19 +1,10 @@
 package fif.use
 
-//abstract class BinarySearchTree[A: Cmp] extends TreeLikeContainer[A] {
-//
-//  def merge(a: Structure, b: Structure): (Structure, Option[Iterable[A]])
-//
-//  def insert(item: A)(existing: Structure): (Structure, Option[A])
-//
-//  def sort(existing: Structure): Iterable[A]
-//
-//  def delete(item: A)(existing: Structure): Option[Structure]
-//
-//  def contains(item: A)(existing: Structure): Boolean
-//
-//}
-//
+abstract class BinarySearchTree[A: Cmp]
+  extends SortableContainer[A, TreeParts.Tree[A]]
+  with TreeLikeContainer[A]
+  with SearchableContainer[A, TreeParts.Tree[A]]
+
 //case object BinarySearchTree {
 //
 //  def apply[A: Cmp]: BinarySearchTree[A] =
