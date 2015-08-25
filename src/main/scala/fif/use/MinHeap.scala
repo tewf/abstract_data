@@ -140,54 +140,57 @@ abstract class MinHeap[A: Cmp]
     }
 }
 
-object BoundedMinHeap {
+object MinHeap {
 
-  type Type[A] = MinHeap[A] with BoundedContainer[A, TreeParts.Tree[A]]
+  object Bounded {
 
-  def apply[A: Cmp](maximumHeapSize: Int): Type[A] = {
+    type Type[A] = MinHeap[A] with BoundedContainer[A, TreeParts.Tree[A]]
 
-    val module = new MinHeapImplementation[A](Some(maximumHeapSize))
+    def apply[A: Cmp](maximumHeapSize: Int): Type[A] = {
 
-    new MinHeap[A] with BoundedContainer[A, TreeParts.Tree[A]] {
+      val module = new MinHeapImplementation[A](Some(maximumHeapSize))
 
-      override val maxSize = module.maxSize
+      new MinHeap[A] with BoundedContainer[A, TreeParts.Tree[A]] {
 
-      override def peekMin(existing: Structure): Option[A] =
-        module.peekMin(existing)
+        override val maxSize = module.maxSize
 
-      override def takeMin(a: Structure): Option[(A, Structure)] =
-        module.takeMin(a)
+        override def peekMin(existing: Structure): Option[A] =
+          module.peekMin(existing)
 
-      override def merge(a: Structure, b: Structure): (Structure, Option[Iterable[A]]) =
-        module.merge(a, b)
+        override def takeMin(a: Structure): Option[(A, Structure)] =
+          module.takeMin(a)
 
-      override def insert(item: A)(existing: Structure): (Structure, Option[A]) =
-        module.insert(item)(existing)
+        override def merge(a: Structure, b: Structure): (Structure, Option[Iterable[A]]) =
+          module.merge(a, b)
+
+        override def insert(item: A)(existing: Structure): (Structure, Option[A]) =
+          module.insert(item)(existing)
+      }
     }
   }
-}
 
-object UnboundedMinHeap {
+  object Unbounded {
 
-  type Type[A] = MinHeap[A] with UnboundedContainer[A, TreeParts.Tree[A]]
+    type Type[A] = MinHeap[A] with UnboundedContainer[A, TreeParts.Tree[A]]
 
-  def apply[A: Cmp]: Type[A] = {
+    def apply[A: Cmp]: Type[A] = {
 
-    val module = new MinHeapImplementation[A](None)
+      val module = new MinHeapImplementation[A](None)
 
-    new MinHeap[A] with UnboundedContainer[A, TreeParts.Tree[A]] {
+      new MinHeap[A] with UnboundedContainer[A, TreeParts.Tree[A]] {
 
-      override def peekMin(existing: Structure): Option[A] =
-        module.peekMin(existing)
+        override def peekMin(existing: Structure): Option[A] =
+          module.peekMin(existing)
 
-      override def takeMin(a: Structure): Option[(A, Structure)] =
-        module.takeMin(a)
+        override def takeMin(a: Structure): Option[(A, Structure)] =
+          module.takeMin(a)
 
-      override def merge(a: Structure, b: Structure): Structure =
-        module.merge(a, b)._1
+        override def merge(a: Structure, b: Structure): Structure =
+          module.merge(a, b)._1
 
-      override def insert(item: A)(existing: Structure): Structure =
-        module.insert(item)(existing)._1
+        override def insert(item: A)(existing: Structure): Structure =
+          module.insert(item)(existing)._1
+      }
     }
   }
 }

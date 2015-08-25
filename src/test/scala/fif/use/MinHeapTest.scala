@@ -1,6 +1,5 @@
 package fif.use
 
-import algebra.Eq
 import org.scalatest.FunSuite
 
 import scala.annotation.tailrec
@@ -8,16 +7,13 @@ import scala.language.postfixOps
 
 class MinHeapTest extends FunSuite {
 
-  val minHeapInt = {
-    implicit val intCmp = Cmp.numericCmp[Int]
-    MinHeap.apply[Int] _
-  }
-
-  val bounded1MinHeap = minHeapInt(Some(1))
+  implicit val intCmp = Cmp.numericCmp[Int]
 
   test("Simple min heap of size 1") {
 
-    val (result, _) = SortableContainer.insert(bounded1MinHeap)(bounded1MinHeap.empty, Seq(3, 4, 1))
+    val bounded1MinHeap = MinHeap.Bounded[Int](1)
+
+    val (result, _) = BoundedContainer.insert(bounded1MinHeap)(bounded1MinHeap.empty, 3, 4, 1)
 
     val (min, rest) = bounded1MinHeap.takeMin(result).get
 
@@ -28,11 +24,9 @@ class MinHeapTest extends FunSuite {
   test("Use unbounded min heap to sort ") {
     val values = Seq(9, 5, 10, 11, 24, 4, 3, 8, 4, 1, 2)
 
-    val UnboundedMinHeap = minHeapInt(None)
+    val UnboundedMinHeap = MinHeap.Unbounded[Int]
 
-    val (result, removed) = SortableContainer.insert(UnboundedMinHeap)(UnboundedMinHeap.empty, values)
-
-    assert(removed isEmpty)
+    val result = UnboundedContainer.insert(UnboundedMinHeap)(UnboundedMinHeap.empty, values: _*)
 
       @tailrec @inline def check(minSortedValues: List[Int], e: UnboundedMinHeap.Structure): Unit =
 
@@ -65,9 +59,9 @@ class MinHeapTest extends FunSuite {
   test("Min heap of size 3") {
     val values = Seq(9, 5, 10, 11, 24, 4, 3, 8, 4, 1, 2)
 
-    val BoundValuePQ = minHeapInt(Some(3))
+    val BoundValuePQ = MinHeap.Bounded[Int](3)
 
-    val (resultPq, removed) = SortableContainer.insert(BoundValuePQ)(BoundValuePQ.empty, values)
+    val (resultPq, removed) = BoundedContainer.insert(BoundValuePQ)(BoundValuePQ.empty, values: _*)
     assert(removed.isDefined && removed.get.size == values.size - 3)
 
     val (item1, pq1) = BoundValuePQ.takeMin(resultPq).get
