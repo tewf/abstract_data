@@ -27,7 +27,7 @@ case object TravData extends Data[Traversable] {
     d.aggregate(zero)(seqOp, combOp)
 
   /** Sort the dataset using a function f that evaluates each element to an orderable type */
-  override def sortBy[A, B: ClassTag](d: Traversable[A])(f: (A) ⇒ B)(implicit ord: math.Ordering[B]): Traversable[A] =
+  override def sortBy[A, B: ClassTag](d: Traversable[A])(f: (A) => B)(implicit ord: math.Ordering[B]): Traversable[A] =
     d.toSeq.sortBy(f)
 
   /** Construct a traversable for the first k elements of a dataset. Will load into main mem. */
