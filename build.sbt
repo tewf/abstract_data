@@ -1,14 +1,18 @@
-organization := "io.malcolmgreaves"
-
-name := "abstract_data"
-
-version := "0.0.1-SNAPSHOT"
-
 // use sbt-dev-settings to configure
 
 import com.nitro.build._
 
 import PublishHelpers._
+
+// GAV
+
+organization := "io.malcolmgreaves"
+
+name := "abstract_data"
+
+lazy val semver = SemanticVersion(0, 0, 1, isSnapshot = true)
+
+version := semver.toString
 
 // scala & java
 
@@ -54,7 +58,7 @@ Publish.settings(
     Seq(
       Dev("mgreaves", "Malcolm Greaves")
     ),
-  art = ArtifactInfo.sonatype,
+  art = ArtifactInfo.sonatype(semver),
   lic = License.apache20
 )
 
