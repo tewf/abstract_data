@@ -2,7 +2,7 @@ organization := "io.malcolmgreaves"
 
 name := "abstract_data"
 
-version := "0.0.1"
+version := "0.0.1-SNAPSHOT"
 
 // use sbt-dev-settings to configure
 
