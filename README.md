@@ -4,6 +4,9 @@ abstract_data
 
 A unifying typeclass describing collections and higher-order data transformation and manipulation actions common to a wide variety of data processing tasks. Inspired by the Scala collections API.
 
+##### ALPHA WARNING
+This work is ongoing. This codebase is continually evolving; APIs break constantly. It should not be relied upon (yet!).
+
 Use Cases
 =========
 
