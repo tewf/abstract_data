@@ -22,7 +22,6 @@ import PublishHelpers._
 lazy val devConfig = {
   import CompileScalaJava._
   Config.spark
-  //Config.spark.copy(scala = Config.spark.scala.copy(isScala211 = false))
 }
 
 CompileScalaJava.librarySettings(devConfig)
@@ -31,7 +30,8 @@ javaOptions := JvmRuntime.settings(devConfig.jvmVer)
 
 // dependencies and their resolvers
 
-resolvers ++= Seq(
+resolvers := Seq(
+  "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",
   "Sonatype Releases" at "https://oss.sonatype.org/content/repositories/releases/"
 )
 

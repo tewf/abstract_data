@@ -1,4 +1,6 @@
-addSbtPlugin("com.gonitro.platform" % "sbt-dev-settings" % "0.0.1")
+resolvers ++= Seq("Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/")
+
+addSbtPlugin("com.gonitro" % "sbt-dev-settings" % "0.0.1-SNAPSHOT")
 
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.0.4")
 
