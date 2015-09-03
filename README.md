@@ -14,6 +14,32 @@ Implementations for concrete types include:
 * [Spark RDD](https://github.com/malcolmgreaves/sparkmod)
 * [Flink DataSet](https://github.com/malcolmgreaves/flinkmod)
 
+### Installation
+
+### Examples
+
+We strive for high code coverage. Check out all of the [tests](https://github.com/malcolmgreaves/abstract_data/tree/master/src/test/scala/fif).
+
+For a rather small use case, check out [Sum](), which shows how to implement the common `sum` functionality on a `Data` type class instance:
+
+    object Sum extends Serializable {
+    
+      // Brings implicits in scope for things like `map`, `flatMap`, etc.
+      // as object oriented style infix notation. These are still using
+      // the type class method definitions!
+      import DataOps.infix._
+      
+      def apply[N: Numeric: ClassTag, D[_]: Data](data: D[N]): N = {
+        val add = implicitly[Numeric[N]].plus _
+        data.aggregate(implicitly[Numeric[N]].zero)(add, add)
+      }
+
+      def apply[N: Numeric](first: N, numbers: N*): N = {
+        val add = implicitly[Numeric[N]].plus _
+        numbers.foldLeft(first)(add)
+      }
+    }
+
 ### Contributing
 We <3 contributions! We want this code to be useful and used! We use pull requests to review and discuss changes, fixes, and improvements.
 
