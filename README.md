@@ -16,6 +16,12 @@ Implementations for concrete types include:
 
 ### Installation
 
+Add the following to your `build.sbt` file:
+
+    libraryDependencies ++= Seq("io.malcolmgreaves" %% "abstract_data" % "X.Y.Z")
+
+Where `X.Y.Z` is the most recent one from [sonatype](https://oss.sonatype.org/content/repositories/releases/io/malcolmgreaves/abstract_data_2.11/).
+
 ### Examples
 
 We strive for high code coverage. Check out all of the [tests](https://github.com/malcolmgreaves/abstract_data/tree/master/src/test/scala/fif).
