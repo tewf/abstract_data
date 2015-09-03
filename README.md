@@ -5,17 +5,17 @@ abstract_data
 
 A unifying typeclass describing collections and higher-order data transformation and manipulation actions common to a wide variety of data processing tasks. Inspired by the Scala collections API.
 
-##### ALPHA WARNING
-This work is ongoing. This codebase is continually evolving; APIs break constantly. It should not be relied upon (yet!).
+### Why Use `abstract_data`?
 
-Use Cases
-=========
+Write an algorithm that accepts a type that adheres to the [Data](https://github.com/malcolmgreaves/abstract_data/blob/master/src/main/scala/fif/Data.scala) type class and watch it work everywhere! Data describes higher-order-functions that manipulate and transform generic collections. It makes use of the [type class](https://en.wikipedia.org/wiki/Type_class) design pattern for ad-hoc polymorphism (instead of the common inheritence-based sub-typing polymorphism). This is a powerful and incredibly flexible mechanism for describing generic behaviors: it is akin to static duck typing.
 
-Write an algorithm that works on a generic collection (fif.Data) and be able to instantly re-use your code to scale from local Scala collections to massively distributed Spark RDDs or Flink DataSet instances.
-
+Implementations for concrete types include:
+* [Traversable](https://github.com/malcolmgreaves/abstract_data/blob/master/src/main/scala/fif/TravData.scala)
+* [Spark RDD](https://github.com/malcolmgreaves/sparkmod)
+* [Flink DataSet](https://github.com/malcolmgreaves/flinkmod)
 
 ### Contributing
-We <3 contributions! We want this code to be useful and used! We use pull requests to review and discuss changes, fixes, and improvements. To kick off a contribution, fork this repo, make some changes on master, then submit a PR and discuss the changes. Once a consensus is reached, please tidy up the PR (to the best of your ability!) and we shall merge into master.
+We <3 contributions! We want this code to be useful and used! We use pull requests to review and discuss changes, fixes, and improvements.
 
 ### License
 
