@@ -6,11 +6,11 @@ import PublishHelpers._
 
 // GAV
 
+lazy val semver = SemanticVersion(0, 0, 1, isSnapshot = false)
+
 organization := "io.malcolmgreaves"
 
 name := "abstract_data"
-
-lazy val semver = SemanticVersion(0, 0, 1, isSnapshot = true)
 
 version := semver.toString
 
@@ -56,7 +56,7 @@ Publish.settings(
   repo = Repository.github("malcolmgreaves", name.toString),
   developers =
     Seq(
-      Dev("mgreaves", "Malcolm Greaves")
+      Developer("mgreaves", "Malcolm Greaves", "greaves.malcolm@gmail.com", new URL("https", "github.com", "/malcolmgreaves"))
     ),
   art = ArtifactInfo.sonatype(semver),
   lic = License.apache20
