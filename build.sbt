@@ -28,6 +28,8 @@ lazy val devConfig = {
   Config.spark
 }
 
+scalaVersion := "2.11.7"
+
 CompileScalaJava.librarySettings(devConfig)
 
 javaOptions := JvmRuntime.settings(devConfig.jvmVer)
@@ -49,6 +51,12 @@ libraryDependencies ++= Seq(
   // Testing
   "org.scalatest" %% "scalatest" % "2.2.4" % Test
 )
+
+// doc hacks
+
+sources in (Compile, doc) ~= (_ filter (_.getName endsWith "ToMap.scala"))
+sources in (Compile, doc) ~= (_ filter (_.getName endsWith "Sum.scala"))
+sources in (Compile, doc) ~= (_ filter (_.getName endsWith "DataOps.scala"))
 
 // publishing settings
 
