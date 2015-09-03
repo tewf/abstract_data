@@ -1,6 +1,7 @@
 abstract_data
 ============
-[![Build Status](https://travis-ci.org/malcolmgreaves/abstract_data.svg?branch=master)](https://travis-ci.org/malcolmgreaves/abstract_data) [![Codacy Badge](http://api.codacy.com:80/project/badge/7a4fbaf2cbe6449993224d6eb4df0f13)](https://www.codacy.com/app/greavesmalcolm/abstract_data) [![Stories in Ready](https://badge.waffle.io/malcolmgreaves/abstract_data.png?label=ready&title=Ready)](https://waffle.io/malcolmgreaves/abstract_data)  [![Join the chat at https://gitter.im/malcolmgreaves/abstract_data](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/malcolmgreaves/abstract_data?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](https://travis-ci.org/malcolmgreaves/abstract_data.svg?branch=master)](https://travis-ci.org/malcolmgreaves/abstract_data) [![Coverage Status](https://coveralls.io/repos/malcolmgreaves/abstract_data/badge.svg?branch=master&service=github)](https://coveralls.io/github/malcolmgreaves/abstract_data?branch=master)
+ [![Codacy Badge](http://api.codacy.com:80/project/badge/7a4fbaf2cbe6449993224d6eb4df0f13)](https://www.codacy.com/app/greavesmalcolm/abstract_data) [![Stories in Ready](https://badge.waffle.io/malcolmgreaves/abstract_data.png?label=ready&title=Ready)](https://waffle.io/malcolmgreaves/abstract_data)  [![Join the chat at https://gitter.im/malcolmgreaves/abstract_data](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/malcolmgreaves/abstract_data?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 A unifying typeclass describing collections and higher-order data transformation and manipulation actions common to a wide variety of data processing tasks. Inspired by the Scala collections API.
 
