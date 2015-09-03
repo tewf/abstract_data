@@ -40,6 +40,11 @@ For a rather small use case, check out [Sum](), which shows how to implement the
       }
     }
 
+Now you can sum elements of a `Traversable` whose elements are `Numeric`. For instance:
+
+    Sum(Traversable(1.0, 2.0, 3.0)) == 6.0
+    Sum(1, 2, 3) == 6
+
 ### Contributing
 We <3 contributions! We want this code to be useful and used! We use pull requests to review and discuss changes, fixes, and improvements.
 
