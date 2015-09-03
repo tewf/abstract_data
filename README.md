@@ -13,11 +13,21 @@ Use Cases
 Write an algorithm that works on a generic collection (fif.Data) and be able to instantly re-use your code to scale from local Scala collections to massively distributed Spark RDDs or Flink DataSet instances.
 
 
-============
-We <3 contributions! We want this code to be useful and used! We use pull requests to review and discuss changes, fixes, and improvements.
+### Contributing
+We <3 contributions! We want this code to be useful and used! We use pull requests to review and discuss changes, fixes, and improvements. To kick off a contribution, fork this repo, make some changes on master, then submit a PR and discuss the changes. Once a consensus is reached, please tidy up the PR (to the best of your ability!) and we shall merge into master.
 
-To kick off a contribution, fork this repo, make some changes on master, then submit a PR and discuss the changes. Once a consensus is reached, close the PR and manually merge onto this repository's master. 
+### License
 
-** MAKE SURE ** you only have one commit per feature / PR. Achieve this by either doing a `git rebase` before merging or a `git merge --sqash`. The commit message should be detailed and explain everything that the commit introduces and removes.
+Copyright 2015 Malcolm Greaves
 
-Also, if you contriubte, add yourself to the developers list within `build.sbt`.
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
