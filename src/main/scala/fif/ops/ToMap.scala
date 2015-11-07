@@ -1,14 +1,14 @@
 package fif.ops
 
 import algebra.Semigroup
-import fif.{ Data, DataOps }
+import fif.Data
 
 import scala.language.higherKinds
 import scala.reflect.ClassTag
 
 object ToMap extends Serializable {
 
-  import DataOps.infix._
+  import Data.ops._
 
   def addToMap[K, V: Semigroup](m: Map[K, V])(key: K, value: V): Map[K, V] =
     if (m.contains(key))

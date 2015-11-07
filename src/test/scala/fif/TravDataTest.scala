@@ -9,7 +9,7 @@ import scala.language.higherKinds
 class TravDataTest extends FunSuite {
 
   // for infix syntax
-  import DataOps.infix._
+  import Data.ops._
 
   // Datatypeclass evidence for all kinds of Traversables
   implicit val t = TravData

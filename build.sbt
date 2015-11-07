@@ -5,7 +5,7 @@ import PublishHelpers._
 // GAV
 
 lazy val pName = "abstract_data"
-lazy val semver = SemanticVersion(0, 0, 2, isSnapshot = false)
+lazy val semver = SemanticVersion(0, 0, 3, isSnapshot = false)
 organization := "io.malcolmgreaves"
 name := pName
 version := semver.toString
