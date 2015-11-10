@@ -3,7 +3,7 @@ package fif
 import scala.language.{ implicitConversions, higherKinds }
 import scala.reflect.ClassTag
 
-case object TravData extends Data[Traversable] {
+object TravData extends Data[Traversable] {
 
   /** Transform a dataset by applying f to each element. */
   override def map[A, B: ClassTag](data: Traversable[A])(f: (A) => B): Traversable[B] =
