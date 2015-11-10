@@ -33,7 +33,7 @@ For a rather small use case, check out [Sum](), which shows how to implement the
       // Brings implicits in scope for things like `map`, `flatMap`, etc.
       // as object oriented style infix notation. These are still using
       // the type class method definitions!
-      import DataOps.infix._
+      import Data.ops._
       
       def apply[N: Numeric: ClassTag, D[_]: Data](data: D[N]): N = {
         val add = implicitly[Numeric[N]].plus _
